@@ -1,0 +1,64 @@
+spring:
+  datasource:
+    initialSize: 5
+    minIdle: 10
+    maxActive: 500
+    maxWait: 60000
+    timeBetweenEvictionRunsMillis: 60000
+    minEvictableIdleTimeMillis: 300000
+    validationQuery: SELECT 1
+    testWhileIdle: true
+    testOnBorrow: true
+    testOnReturn: false
+    poolPreparedStatements: true
+    maxPoolPreparedStatementPerConnectionSize: 100
+    connectionProperties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000
+    filters: stat,wall
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 100MB
+  mvc:
+    servlet:
+      load-on-startup: 1
+  redis:
+    host: localhost
+    port: 6379
+    password: 1qaz@WSX
+    database: 0
+    jedis:
+      pool:
+        min-idle: 2
+        max-idle: 8
+        max-active: 10
+        max-wait: -1
+sys:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/dam?useUnicode=true&characterEncoding=utf-8&allowMultiQueries=true&useSSL=false&serverTimezone=Asia/Shanghai
+    username: root
+    security: 123456
+logging:
+  config: classpath:logback-spring.xml
+log:
+  level:
+    root: info
+    my: debug
+  file: logs/sso_web.log
+  maxsize: 30MB
+server:
+  port: 9288
+redisCache:
+  expire: 50400
+  keyPrefix: sso_cache
+redisSession:
+  expire: 50400
+  keyPrefix: sso_session
+shiro:
+  security:
+    algorithmName: md5
+    hashIterations: 2
+    hexEncoded: true

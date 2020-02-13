@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>OAuth2单点登录</title>
+    <script src="https://cdn.bootcss.com/vue/2.5.16/vue.min.js"></script>
+    <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+    <link href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .row-center {
+            text-align: center;
+            margin-top: 120px;
+        }
+
+        .col-center {
+            display: inline-block;
+            float: none;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+<div class="container" id="ssoLogin">
+    <div class="row row-center" style="height: 500px">
+        <div class="col-center">
+            <div>
+                <p>OAuth2单点登录</p>
+                <ul class="nav nav-tabs">
+                    <li v-bind:class="{ active: userPasswordVisible }"><a href="#" @click.prevent="showUserPassword">
+                        账号密码</a></li>
+                    <li v-bind:class="{ active: phoneSmsCodeVisible }"><a href="#" @click.prevent="showPhoneSmsCode">短信登录</a>
+                    </li>
+                    <li v-bind:class="{ active: qrCodeVisible }"><a href="#" @click.prevent="showQrCode">扫码登录</a></li>
+                </ul>
+            </div>
+            <div v-show="userPasswordVisible" style="margin-top: 10px;">
+                <input type="hidden" th:value="${test}" id="test"/>
+                <p>账号：<input type="text" v-model="username"/></p>
+                <p>密码：<input type="text" v-model="password"/></p>
+                <!--下面是记住我输入框-->
+                <div class="checkbox">
+                    <label>
+                        <input v-model="rememberMe" type="checkbox"/> 记住我
+                    </label>
+                </div>
+                <button type="button" @click="login">登录</button>
+            </div>
+            <div v-show="phoneSmsCodeVisible" style="margin-top: 10px;">
+                <p>手机号：<input type="text" v-model="username"/></p>
+                <p>验证码：<input type="text" v-model="password"/></p>
+                <button type="button" @click="login">登录</button>
+            </div>
+            <div v-show="qrCodeVisible" style="margin-top: 10px;">
+                <p>二维码</p>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    var vm = new Vue({
+        el: '#ssoLogin',
+        data: {
+            userPasswordVisible: false,
+            phoneSmsCodeVisible: false,
+            qrCodeVisible: false,
+            username: '',
+            password: '',
+            error: false,
+            errorMsg: '',
+            rememberMe: false
+        },
+        methods: {
+            login() {
+                var data = "username=" + this.username + "&password=" + this.password + "&rememberMe=" + this.rememberMe;
+                $.ajax({
+                    type: "POST",
+                    url: "/login",
+                    data: data,
+                    dataType: "json",
+                    success: function (result) {
+                    }
+                });
+            },
+            showUserPassword() {
+                this.userPasswordVisible = true;
+                this.phoneSmsCodeVisible = false;
+                this.qrCodeVisible = false;
+            },
+            showPhoneSmsCode() {
+                this.phoneSmsCodeVisible = true;
+                this.userPasswordVisible = false;
+                this.qrCodeVisible = false;
+            },
+            showQrCode() {
+                this.qrCodeVisible = true;
+                this.phoneSmsCodeVisible = false;
+                this.userPasswordVisible = false;
+            }
+        },
+        created: function () {
+            console.log($("#test").val());
+        },
+        mounted: function () {
+            this.showUserPassword();
+        }
+    });
+</script>
+</body>
+</html>
