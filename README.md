@@ -1,4 +1,6 @@
 #### 单点登录 springboot+shiro+oltu+thymeleaf+vue.js  
+github访问少  issue可以发到 https://gitee.com/qiufeng9862/SSO 
+
 ****
 #### 项目介绍
 Maven项目, 字符编码: UTF-8;  
