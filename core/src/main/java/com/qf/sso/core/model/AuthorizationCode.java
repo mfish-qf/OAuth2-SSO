@@ -17,14 +17,14 @@ public class AuthorizationCode {
     @ApiModelProperty("客户端id")
     private String clientId;
 
+    @ApiModelProperty("获取code时传入sessionid")
+    private String codeSessionId;
+
     @ApiModelProperty("申请Scope权限")
     private String scope;
 
     @ApiModelProperty("回调状态")
     private String state;
-
-    @ApiModelProperty("登录账号")
-    private String account;
 
     @ApiModelProperty("用户ID")
     private String userId;

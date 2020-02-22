@@ -7,6 +7,8 @@ import org.apache.shiro.util.ByteSource;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.util.UUID;
+
 /**
  * @author qiufeng
  * @date 2020/2/13 16:32
@@ -24,7 +26,7 @@ public class PasswordHelper {
      *
      * @return
      */
-    public String buildSalt() {
+    public static String buildSalt() {
         return new SecureRandomNumberGenerator().nextBytes().toHex();
     }
 
@@ -45,5 +47,9 @@ public class PasswordHelper {
                 password,
                 ByteSource.Util.bytes(userId + salt),
                 hashIterations).toHex();
+    }
+
+    public static void main(String[] args){
+        System.out.println(buildSalt());
     }
 }

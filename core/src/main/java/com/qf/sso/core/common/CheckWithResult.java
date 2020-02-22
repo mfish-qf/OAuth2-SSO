@@ -3,20 +3,22 @@ package com.qf.sso.core.common;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
  * @author qiufeng
  * @date 2020/2/13 13:48
  */
-@ApiModel(value= "检查+返回结果类")
+@ApiModel(value = "检查+返回结果类")
 public class CheckWithResult<T> {
-    public CheckWithResult(){
+    public CheckWithResult() {
         this(true);
     }
 
-    public CheckWithResult(boolean result){
+    public CheckWithResult(boolean result) {
         setSuccess(result);
+        setParam(new HashMap<>());
     }
 
     @ApiModelProperty("是否正确true 正确 false 错误")
@@ -26,7 +28,7 @@ public class CheckWithResult<T> {
     @ApiModelProperty("返回附加信息")
     private String msg;
     @ApiModelProperty("补充参数 用于多次检查时携带上一次参数提供下次使用")
-    private Map<String,String> param;
+    private Map<String, String> param;
 
     public boolean isSuccess() {
         return isSuccess;
@@ -46,8 +48,8 @@ public class CheckWithResult<T> {
         return this;
     }
 
-    public CheckWithResult<T> check(CheckWithResult<T> result){
-        if(!this.isSuccess){
+    public CheckWithResult<T> check(CheckWithResult<T> result) {
+        if (!this.isSuccess) {
             return this;
         }
         return result;

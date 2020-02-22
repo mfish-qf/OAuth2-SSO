@@ -1,4 +1,4 @@
-package com.qf.sso.core.redis;
+package com.qf.sso.core.cache.redis;
 
 import org.apache.shiro.cache.Cache;
 import org.apache.shiro.cache.CacheException;
@@ -14,7 +14,7 @@ import java.util.concurrent.TimeUnit;
  * @author qiufeng
  * @date 2020/2/11 19:18
  */
-@Component
+@Component("redisCache")
 public class RedisCache implements Cache<String, Object> {
     @Resource(name = "redisTemplate")
     RedisTemplate<String, Object> redisTemplate;

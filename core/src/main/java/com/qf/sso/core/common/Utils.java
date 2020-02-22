@@ -1,8 +1,13 @@
 package com.qf.sso.core.common;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.oltu.oauth2.common.OAuth;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.*;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 /**
  * @author qiufeng
@@ -11,76 +16,59 @@ import java.io.*;
 @Slf4j
 public class Utils {
     /**
-     * 反序列化
+     * 从请求中获取token值
+     * token通过access_token=****直接赋值
+     * 或者token放到head中 以Authorization=Bearer******方式传入
      *
-     * @param bytes
+     * @param request
      * @return
      */
-    public static Object deserialize(byte[] bytes) {
-
-        Object result = null;
-
-        if (isEmpty(bytes)) {
-            return null;
-        }
-
-        try {
-            ByteArrayInputStream byteStream = new ByteArrayInputStream(bytes);
-            try {
-                ObjectInputStream objectInputStream = new ObjectInputStream(
-                        byteStream);
-                try {
-                    result = objectInputStream.readObject();
-                } catch (ClassNotFoundException ex) {
-                    throw new Exception("Failed to deserialize object type", ex);
-                }
-            } catch (Throwable ex) {
-                throw new Exception("Failed to deserialize", ex);
+    public static String getAccessToken(HttpServletRequest request) {
+        String accessToken = request.getParameter(OAuth.OAUTH_ACCESS_TOKEN);
+        // 请求参数中包含access_token参数
+        if (StringUtils.isEmpty(accessToken)) {
+            // 头部的Authorization值以Bearer开头
+            String auth = request.getHeader(OAuth.HeaderType.AUTHORIZATION);
+            if (auth != null && auth.startsWith(OAuth.OAUTH_HEADER_NAME)) {
+                accessToken = auth.replace(OAuth.OAUTH_HEADER_NAME, "").trim();
             }
-        } catch (Exception e) {
-            log.error("Failed to deserialize", e);
         }
-        return result;
-    }
-
-    public static boolean isEmpty(byte[] data) {
-        return (data == null || data.length == 0);
+        return accessToken;
     }
 
     /**
-     * 序列化
-     *
-     * @param object
+     * 获取请求用户IP
+     * @param request
      * @return
      */
-    public static byte[] serialize(Object object) {
-
-        byte[] result = null;
-
-        if (object == null) {
-            return new byte[0];
+    public static String getRemoteIP(HttpServletRequest request) {
+        String ip = request.getHeader("x-forwarded-for");
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getHeader("Proxy-Client-IP");
         }
-        try {
-            ByteArrayOutputStream byteStream = new ByteArrayOutputStream(128);
-            try {
-                if (!(object instanceof Serializable)) {
-                    throw new IllegalArgumentException(
-                            Utils.class.getSimpleName()
-                                    + " requires a Serializable payload "
-                                    + "but received an object of type ["
-                                    + object.getClass().getName() + "]");
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getHeader("WL-Proxy-Client-IP");
+        }
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getRemoteAddr();
+            if (ip.equals("127.0.0.1")) {
+                // 根据网卡取本机配置的IP
+                InetAddress inetAddress = null;
+                try {
+                    inetAddress = InetAddress.getLocalHost();
+                } catch (UnknownHostException e) {
+                    e.printStackTrace();
                 }
-                ObjectOutputStream objectOutputStream = new ObjectOutputStream(
-                        byteStream);
-                objectOutputStream.writeObject(object);
-                objectOutputStream.flush();
-                result = byteStream.toByteArray();
-            } catch (Throwable ex) {
-                throw new Exception("Failed to serialize", ex);
+                ip = inetAddress.getHostAddress();
             }
-        } catch (Exception ex) {
-            log.error("Failed to serialize", ex);
         }
-        return result;
+        // 对于通过多个代理的情况，第一个IP为客户端真实IP,多个IP按照','分割
+        if (ip != null && ip.length() > 15) {
+            log.info(ip);
+            if (ip.indexOf(",") > 0) {
+                ip = ip.substring(0, ip.indexOf(","));
+            }
+        }
+        return ip;
     }
 }

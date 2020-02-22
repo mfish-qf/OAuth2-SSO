@@ -1,10 +1,11 @@
-package com.qf.sso.core.redis;
+package com.qf.sso.core.cache.redis;
 
 import org.apache.shiro.cache.Cache;
 import org.apache.shiro.cache.CacheException;
 import org.apache.shiro.cache.CacheManager;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import javax.annotation.Resource;
 
 /**
  * @author qiufeng
@@ -13,7 +14,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class RedisCacheManager implements CacheManager {
 
-    @Autowired
+    @Resource(name = "redisCache")
     private RedisCache cache;
 
     @Override

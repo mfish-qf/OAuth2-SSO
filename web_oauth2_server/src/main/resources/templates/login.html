@@ -17,47 +17,84 @@
             float: none;
             text-align: left;
         }
+        .sso-form{
+            margin-top: 10px;width: 300px
+        }
     </style>
 </head>
 <body>
+<input type="hidden" th:value="${errorMsg}" id="errorMsg"/>
+<input type="hidden" th:value="${loginType}" id="loginType"/>
+<input type="hidden" th:value="${username}" id="username"/>
 <div class="container" id="ssoLogin">
-    <div class="row row-center" style="height: 500px">
+    <div class="row row-center" style="height: 500px;">
         <div class="col-center">
             <div>
                 <p>OAuth2单点登录</p>
                 <ul class="nav nav-tabs">
-                    <li v-bind:class="{ active: userPasswordVisible }"><a href="#" @click.prevent="showUserPassword">
-                        账号密码</a></li>
+                    <li v-bind:class="{ active: userPasswordVisible }"><a href="#" @click.prevent="showUserPassword">账号密码</a>
+                    </li>
                     <li v-bind:class="{ active: phoneSmsCodeVisible }"><a href="#" @click.prevent="showPhoneSmsCode">短信登录</a>
                     </li>
                     <li v-bind:class="{ active: qrCodeVisible }"><a href="#" @click.prevent="showQrCode">扫码登录</a></li>
                 </ul>
             </div>
-            <div v-show="userPasswordVisible" style="margin-top: 10px;">
-                <input type="hidden" th:value="${test}" id="test"/>
-                <p>账号：<input type="text" v-model="username"/></p>
-                <p>密码：<input type="text" v-model="password"/></p>
-                <!--下面是记住我输入框-->
-                <div class="checkbox">
-                    <label>
-                        <input v-model="rememberMe" type="checkbox"/> 记住我
-                    </label>
+            <div v-show="errorVisible" style="margin-top: 10px;">{{errorMsg}}</div>
+            <div v-show="userPasswordVisible" class="sso-form">
+                <form id="login" action="" method="post">
+                    <div class="form-group">
+                        <div class="input-group">
+                        <span class="input-group-addon">
+                            <span class="glyphicon glyphicon-user"></span>
+                        </span>
+                            <input type="text" name="username" v-model="username" class="form-control" placeholder="用户名" >
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="input-group" style="text-align: left">
+                            <span class="input-group-addon">
+                                <span class="glyphicon glyphicon-eye-open"></span>
+                            </span>
+                            <input type="password" name="password" v-model="password" class="form-control" placeholder="密码" >
+                        </div>
+                    </div>
+                    <!--下面是记住我输入框-->
+                    <div class="checkbox">
+                        <label>
+                            <input v-model="rememberMe" type="checkbox" name="rememberMe"/>记住我
+                        </label>
+                    </div>
+                    <input type="hidden" v-model="loginType" name="loginType"/>
+                    <button type="button" class="btn btn-primary" @click="login">登录</button>
+                </form>
+            </div>
+            <div v-show="phoneSmsCodeVisible" class="sso-form">
+                <div class="form-group">
+                    <div class="input-group">
+                        <span class="input-group-addon">
+                            <span class="glyphicon glyphicon-user"></span>
+                        </span>
+                        <input type="text" name="username" class="form-control" placeholder="手机号">
+                    </div>
                 </div>
-                <button type="button" @click="login">登录</button>
+                <div class="form-group">
+                    <div class="input-group" style="text-align: left">
+                            <span class="input-group-addon">
+                                <span class="glyphicon glyphicon-eye-open"></span>
+                            </span>
+                        <input type="text" name="code" class="form-control" placeholder="验证码">
+                    </div>
+                </div>
+                <button type="button" class="btn btn-primary" @click="login">登录</button>
             </div>
-            <div v-show="phoneSmsCodeVisible" style="margin-top: 10px;">
-                <p>手机号：<input type="text" v-model="username"/></p>
-                <p>验证码：<input type="text" v-model="password"/></p>
-                <button type="button" @click="login">登录</button>
-            </div>
-            <div v-show="qrCodeVisible" style="margin-top: 10px;">
+            <div v-show="qrCodeVisible" class="sso-form">
                 <p>二维码</p>
             </div>
         </div>
     </div>
 </div>
 <script type="text/javascript">
-    var vm = new Vue({
+    let vm = new Vue({
         el: '#ssoLogin',
         data: {
             userPasswordVisible: false,
@@ -65,43 +102,68 @@
             qrCodeVisible: false,
             username: '',
             password: '',
-            error: false,
+            loginType: '',
+            errorVisible: false,
             errorMsg: '',
             rememberMe: false
         },
         methods: {
             login() {
-                var data = "username=" + this.username + "&password=" + this.password + "&rememberMe=" + this.rememberMe;
-                $.ajax({
-                    type: "POST",
-                    url: "/login",
-                    data: data,
-                    dataType: "json",
-                    success: function (result) {
-                    }
-                });
+                $('#login').submit();
+                // $.ajax({
+                //     type: "POST",
+                //     data: "username=" + this.username + "&password=" + this.password
+                //         + "&rememberMe=" + this.rememberMe + "&loginType=" + this.loginType,
+                //     dataType: "json",
+                //     success: function (result) {
+                //         console.log(result);
+                //     }
+                // });
             },
             showUserPassword() {
                 this.userPasswordVisible = true;
                 this.phoneSmsCodeVisible = false;
                 this.qrCodeVisible = false;
+                this.loginType = "user_password";
             },
             showPhoneSmsCode() {
                 this.phoneSmsCodeVisible = true;
                 this.userPasswordVisible = false;
                 this.qrCodeVisible = false;
+                this.loginType = "phone_smsCode";
             },
             showQrCode() {
                 this.qrCodeVisible = true;
                 this.phoneSmsCodeVisible = false;
                 this.userPasswordVisible = false;
+                this.loginType = "qr_code";
+            },
+            showError() {
+                this.errorMsg = $('#errorMsg').val();
+                if (this.errorMsg !== '' && this.errorMsg !== undefined) {
+                    this.errorVisible = true;
+                }
+            },
+            initLoginData() {
+                this.loginType = $('#loginType').val();
+                switch (this.loginType) {
+                    case "phone_smsCode":
+                        this.showPhoneSmsCode();
+                        break;
+                    case "qr_code":
+                        this.showQrCode();
+                        break;
+                    default:
+                        this.username = $('#username').val();
+                        this.showUserPassword();
+                }
             }
         },
         created: function () {
-            console.log($("#test").val());
         },
         mounted: function () {
-            this.showUserPassword();
+            this.initLoginData();
+            this.showError();
         }
     });
 </script>

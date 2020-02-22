@@ -18,7 +18,7 @@
                 password = #{password},
             </if>
             <if test="oldPassword != null">
-                oldPassword = #{oldPassword},
+                old_password = #{oldPassword},
             </if>
             <if test="nickname != null">
                 nickname = #{nickname},
@@ -41,8 +41,20 @@
             <if test="salt != null">
                 salt = #{salt},
             </if>
-            updateTime = #{updateTime}
+            update_time = #{updateTime}
         </set>
         where t.id = #{id}
     </update>
+    <select id="getUserByAccount" resultType="com.qf.sso.core.model.SSOUser">
+        select * from sso_user
+        <where>
+            1!=1
+            <if test="account != null and account != ''">
+                or account = #{account}
+                or phone = #{account}
+                or email = #{account}
+                or id = #{account}
+            </if>
+        </where>
+    </select>
 </mapper>

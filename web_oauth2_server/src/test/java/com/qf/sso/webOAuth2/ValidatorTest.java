@@ -1,7 +1,5 @@
 package com.qf.sso.webOAuth2;
 
-import com.qf.sso.core.validator.ClientIdValidator;
-import com.qf.sso.core.validator.MutipleValidator;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;

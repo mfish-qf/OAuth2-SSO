@@ -35,10 +35,12 @@ spring:
         max-idle: 8
         max-active: 10
         max-wait: -1
+  thymeleaf:
+    cache: false
 sys:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/dam?useUnicode=true&characterEncoding=utf-8&allowMultiQueries=true&useSSL=false&serverTimezone=Asia/Shanghai
+    url: jdbc:mysql://localhost:3306/oauth2_sso?useUnicode=true&characterEncoding=utf-8&allowMultiQueries=true&useSSL=false&serverTimezone=Asia/Shanghai
     username: root
     security: 123456
 logging:
@@ -50,7 +52,7 @@ log:
   file: logs/sso_web.log
   maxsize: 30MB
 server:
-  port: 9288
+  port: 19888
 redisCache:
   expire: 50400
   keyPrefix: sso_cache
@@ -62,3 +64,8 @@ shiro:
     algorithmName: md5
     hashIterations: 2
     hexEncoded: true
+oauth2:
+  expire:
+    code: 180
+    token: 21600
+    refreshToken: 604800‬

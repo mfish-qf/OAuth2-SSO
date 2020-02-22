@@ -1,9 +1,9 @@
 package com.qf.sso.core.config;
 
 import com.qf.sso.core.credentials.MyHashedCredentialsMatcher;
-import com.qf.sso.core.redis.RedisSessionDAO;
+import com.qf.sso.core.cache.redis.RedisSessionDAO;
 import com.qf.sso.core.realm.UserPasswordRealm;
-import com.qf.sso.core.redis.RedisCacheManager;
+import com.qf.sso.core.cache.redis.RedisCacheManager;
 import lombok.extern.slf4j.Slf4j;
 
 import org.apache.shiro.codec.Base64;
@@ -45,7 +45,7 @@ public class ShiroConfig {
      * @return
      */
     @Bean
-    public ShiroFilterFactoryBean shirFilter(SecurityManager securityManager) {
+    public ShiroFilterFactoryBean shiroFilter(SecurityManager securityManager) {
         ShiroFilterFactoryBean shiroFilterFactoryBean = new ShiroFilterFactoryBean();
         shiroFilterFactoryBean.setSecurityManager(securityManager);
         //拦截器.
@@ -68,11 +68,8 @@ public class ShiroConfig {
         filterChainDefinitionMap.put("/**", "user");
         // 如果不设置默认会自动寻找Web工程根目录下的"/login.jsp"页面
         shiroFilterFactoryBean.setLoginUrl("/login");
-        // 登录成功后要跳转的链接
-        shiroFilterFactoryBean.setSuccessUrl("/index");
-
         //未授权界面;
-        shiroFilterFactoryBean.setUnauthorizedUrl("/403");
+        shiroFilterFactoryBean.setUnauthorizedUrl("/404");
         shiroFilterFactoryBean.setFilterChainDefinitionMap(filterChainDefinitionMap);
         return shiroFilterFactoryBean;
     }
@@ -190,6 +187,7 @@ public class ShiroConfig {
         DefaultWebSecurityManager securityManager = new DefaultWebSecurityManager();
         //设置Realm，用于获取认证凭证
         securityManager.setRealm(userPasswordRealm());
+
         //设置session管理方式
         securityManager.setSessionManager(sessionManager);
         securityManager.setCacheManager(redisCacheManager);

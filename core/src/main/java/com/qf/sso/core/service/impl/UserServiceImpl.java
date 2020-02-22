@@ -1,18 +1,18 @@
 package com.qf.sso.core.service.impl;
 
+import com.qf.sso.core.cache.temp.Account2IdTempCache;
 import com.qf.sso.core.common.CheckWithResult;
 import com.qf.sso.core.common.PasswordHelper;
-import com.qf.sso.core.common.SerConstant;
 import com.qf.sso.core.dao.SSOUserDao;
 import com.qf.sso.core.model.SSOUser;
-import com.qf.sso.core.model.redis.UserCipher;
+import com.qf.sso.core.cache.temp.UserTempCache;
 import com.qf.sso.core.service.UserService;
-import org.apache.shiro.util.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.text.MessageFormat;
 import java.util.*;
 
 /**
@@ -20,13 +20,16 @@ import java.util.*;
  * @date 2020/2/13 16:51
  */
 @Service
+@Slf4j
 public class UserServiceImpl implements UserService {
-    @Autowired
+    @Resource
     private PasswordHelper passwordHelper;
-    @Resource(name = "redisTemplate")
-    private RedisTemplate<String, Object> redisTemplate;
-    @Autowired
+    @Resource
     SSOUserDao ssoUserDao;
+    @Resource
+    UserTempCache userTempCache;
+    @Resource
+    Account2IdTempCache account2IdTempCache;
 
     /**
      * 修改用户密码
@@ -36,24 +39,27 @@ public class UserServiceImpl implements UserService {
      * @return
      */
     @Override
-    public CheckWithResult<UserCipher> changePassword(String userId, String newPassword) {
-        CheckWithResult<UserCipher> result = verifyPassword(newPassword);
+    public CheckWithResult<SSOUser> changePassword(String userId, String newPassword) {
+        CheckWithResult<SSOUser> result = verifyPassword(newPassword);
         if (!result.isSuccess()) {
             return result;
         }
-        UserCipher pwd = (UserCipher) redisTemplate.opsForValue().get(SerConstant.USER_PASSWORD + userId);
-        if (pwd == null) {
-            pwd = new UserCipher();
+        SSOUser user = userTempCache.getCacheInfo(userId);
+        if (user == null) {
+            String error = MessageFormat.format("错误:用户id{0}未获取到用户信息!", userId);
+            log.error(error);
+            return result.setSuccess(false).setMsg(error);
         }
 
-        pwd.setOldPassword(setOldPwd(pwd.getOldPassword(), pwd.getPassword()));
-        pwd.setPassword(passwordHelper.encryptPassword(userId, newPassword, pwd.getSalt()));
-        if (pwd.getOldPassword().indexOf(pwd.getPassword()) >= 0) {
+        user.setOldPassword(setOldPwd(user.getOldPassword(), user.getPassword()));
+        user.setPassword(passwordHelper.encryptPassword(userId, newPassword, user.getSalt()));
+        if (user.getOldPassword().indexOf(user.getPassword()) >= 0) {
             return result.setSuccess(false).setMsg("密码5次内不得循环使用");
         }
-        pwd.setModifyDate(String.valueOf(System.currentTimeMillis()));
-        redisTemplate.opsForValue().set(SerConstant.USER_PASSWORD + userId, pwd);
-        return result.setSuccess(true).setMsg("修改成功").setResult(pwd);
+        user.setUpdateTime(new Date());
+        ssoUserDao.update(user);
+        userTempCache.updateCacheInfo(userId, user);
+        return result.setSuccess(true).setMsg("修改成功").setResult(user);
     }
 
     @Override
@@ -63,7 +69,18 @@ public class UserServiceImpl implements UserService {
         if (res > 0) {
             return result;
         }
-        return result.setSuccess(false).setMsg("未找到更新数据");
+        return result.setSuccess(false).setMsg("未找到用户信息更新数据");
+    }
+
+    @Override
+    public SSOUser getUserByAccount(String account) {
+        String userId = account2IdTempCache.getCacheInfo(account);
+        return getUserById(userId);
+    }
+
+    @Override
+    public SSOUser getUserById(String userId) {
+        return userTempCache.getCacheInfo(userId);
     }
 
     /**
@@ -73,8 +90,8 @@ public class UserServiceImpl implements UserService {
      * @param password
      * @return
      */
-    public CheckWithResult<UserCipher> verifyPassword(String password) {
-        CheckWithResult<UserCipher> result = new CheckWithResult<>();
+    public CheckWithResult<SSOUser> verifyPassword(String password) {
+        CheckWithResult<SSOUser> result = new CheckWithResult<>();
         if (password.length() < 8 || password.length() > 16) {
             return result.setSuccess(false).setMsg("密码长度必须8~16位");
         }
@@ -93,8 +110,8 @@ public class UserServiceImpl implements UserService {
      * @return
      */
     private String setOldPwd(String oldPwd, String pwd) {
-        String[] pwds = "".equals(oldPwd) ? new String[0] : oldPwd.split(",");
-        List<String> list = Arrays.asList(pwds);
+        String[] pwds = StringUtils.isEmpty(oldPwd) ? new String[0] : oldPwd.split(",");
+        List<String> list = new ArrayList<>(Arrays.asList(pwds));
         if (list.size() >= 5) {
             list.remove(0);
         }

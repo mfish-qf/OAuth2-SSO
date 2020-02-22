@@ -1,4 +1,4 @@
-package com.qf.sso.core.redis;
+package com.qf.sso.core.cache.redis;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.session.Session;

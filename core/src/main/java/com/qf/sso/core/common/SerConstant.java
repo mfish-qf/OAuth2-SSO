@@ -5,10 +5,15 @@ package com.qf.sso.core.common;
  * @date 2020/2/10 19:32
  */
 public class SerConstant {
-    public static final String AUTH_CODE = "auth_code:";
-    public static final String ACCESS_TOKEN = "access_token:";
-    public static final String REFRESH_TOKEN = "refresh_token:";
-    public static final String USER_PASSWORD = "user_password:";
+    public static final String ACCOUNT_DELETE_DESCRIPTION = "登录失败:该账号已删除，请联系管理员";
+    public static final String ACCOUNT_DISABLE_DESCRIPTION = "登录失败:该帐号已禁用，请联系管理员";
+    public static final String INVALID_USER_PASSWORD_DESCRIPTION = "登录失败:错误的帐号或密码";
+    public static final String INVALID_USER_ID_DESCRIPTION = "登录失败:错误的用户ID";
+    public static final String USERNAME = "username";
+    public static final String PASSWORD = "password";
+    public static final String LOGIN_TYPE = "loginType";
+    public static final String ERROR_MSG = "errorMsg";
+
     /**
      * 登录类型
      */
@@ -45,7 +50,7 @@ public class SerConstant {
                     return type;
                 }
             }
-            return LoginType.微信认证;
+            return LoginType.密码;
         }
 
         public static LoginType getLoginType(int index) {
@@ -54,11 +59,52 @@ public class SerConstant {
                     return type;
                 }
             }
-            return LoginType.微信认证;
+            return LoginType.密码;
         }
 
         public int getIndex() {
             return index;
+        }
+
+    }
+
+    /**
+     * 账号状态
+     */
+    public enum AccountState {
+        删除(0),
+        正常(1),
+        禁用(2),
+        锁定(3);
+        private int value;
+
+        AccountState(int value) {
+            this.value = value;
+        }
+
+        @Override
+        public String toString() {
+            return this.name();
+        }
+    }
+
+    /**
+     * 设备类型
+     */
+    public enum DeviceType {
+        //浏览器
+        Web("0"),
+        //手机端
+        APP("1");
+        private String value;
+
+        DeviceType(String value) {
+            this.value = value;
+        }
+
+        @Override
+        public String toString() {
+            return value;
         }
     }
 }
