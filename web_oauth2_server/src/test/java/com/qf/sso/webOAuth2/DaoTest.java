@@ -25,7 +25,6 @@ public class DaoTest {
     public void testUserDao() {
         SSOUser user = userDao.getUserByAccount("18952006692");
         user = userDao.getUserByAccount("qiufeng9862@qq.com");
-        System.out.println(user);
     }
 
     @Test

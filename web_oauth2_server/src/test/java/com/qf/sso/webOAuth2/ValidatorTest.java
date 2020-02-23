@@ -12,7 +12,4 @@ import org.springframework.test.context.junit4.SpringRunner;
 @SpringBootTest
 @RunWith(SpringRunner.class)
 public class ValidatorTest {
-    @Test
-    public void testValidator(){
-    }
 }

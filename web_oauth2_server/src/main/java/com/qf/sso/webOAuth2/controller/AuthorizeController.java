@@ -11,6 +11,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.oltu.oauth2.as.request.OAuthAuthzRequest;
 import org.apache.oltu.oauth2.as.response.OAuthASResponse;
 import org.apache.oltu.oauth2.common.OAuth;
@@ -95,7 +96,7 @@ public class AuthorizeController {
         // 设置授权码
         builder.setCode(code.getCode());
         String state = oauthRequest.getParam(OAuth.OAUTH_STATE);
-        if (state != null && !"".equals(state)) {
+        if (!StringUtils.isEmpty(state)) {
             builder.setParam(OAuth.OAUTH_STATE, state);
         }
         // 构建响应

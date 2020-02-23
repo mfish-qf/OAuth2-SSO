@@ -31,11 +31,11 @@ public abstract class MultipleValidator {
      * @param result
      * @return
      */
-    public CheckWithResult<?> validateClient(HttpServletRequest request, CheckWithResult<OAuthClient> result) {
+    public CheckWithResult<OAuthClient> validateClient(HttpServletRequest request, CheckWithResult<OAuthClient> result) {
         return validate(request, result, validateClientList);
     }
 
-    public <T> CheckWithResult<?> validate(HttpServletRequest request, CheckWithResult<T> result, List<Class<? extends IBaseValidator<T>>> list) {
+    public <T> CheckWithResult<T> validate(HttpServletRequest request, CheckWithResult<T> result, List<Class<? extends IBaseValidator<T>>> list) {
         for (Class<? extends IBaseValidator<T>> validator : list) {
             result = applicationContextProvider.getBean(validator)
                     .validate(request, result);

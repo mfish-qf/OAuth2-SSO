@@ -7,7 +7,7 @@ package com.qf.sso.core.common;
 public class SerConstant {
     public static final String ACCOUNT_DELETE_DESCRIPTION = "登录失败:该账号已删除，请联系管理员";
     public static final String ACCOUNT_DISABLE_DESCRIPTION = "登录失败:该帐号已禁用，请联系管理员";
-    public static final String INVALID_USER_PASSWORD_DESCRIPTION = "登录失败:错误的帐号或密码";
+    public static final String INVALID_USER_SECRET_DESCRIPTION = "登录失败:错误的帐号或密码";
     public static final String INVALID_USER_ID_DESCRIPTION = "登录失败:错误的用户ID";
     public static final String USERNAME = "username";
     public static final String PASSWORD = "password";
@@ -76,6 +76,7 @@ public class SerConstant {
         正常(1),
         禁用(2),
         锁定(3);
+
         private int value;
 
         AccountState(int value) {
@@ -85,6 +86,10 @@ public class SerConstant {
         @Override
         public String toString() {
             return this.name();
+        }
+
+        public int getValue() {
+            return value;
         }
     }
 

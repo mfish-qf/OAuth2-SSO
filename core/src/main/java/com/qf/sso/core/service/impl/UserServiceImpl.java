@@ -92,6 +92,9 @@ public class UserServiceImpl implements UserService {
      */
     public CheckWithResult<SSOUser> verifyPassword(String password) {
         CheckWithResult<SSOUser> result = new CheckWithResult<>();
+        if(StringUtils.isEmpty(password)){
+            return result.setSuccess(false).setMsg("密码不允许为空");
+        }
         if (password.length() < 8 || password.length() > 16) {
             return result.setSuccess(false).setMsg("密码长度必须8~16位");
         }
@@ -115,7 +118,7 @@ public class UserServiceImpl implements UserService {
         if (list.size() >= 5) {
             list.remove(0);
         }
-        if (!"".equals(pwd)) {
+        if (!StringUtils.isEmpty(pwd)) {
             list.add(pwd);
         }
         return StringUtils.join(list.iterator(), ",");

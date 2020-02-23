@@ -40,7 +40,7 @@ public class RedisTest {
     @Test
     public void redisGetSession() {
         Object obj = redisTemplate.opsForValue().get("sso_session56670581-e9b7-44c8-9492-2bf7f5968ba1");
-        System.out.println(obj);
+        log.info(obj.toString());
     }
 
     @Test

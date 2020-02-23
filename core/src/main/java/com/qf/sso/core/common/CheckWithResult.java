@@ -12,23 +12,14 @@ import java.util.Map;
  */
 @ApiModel(value = "检查+返回结果类")
 public class CheckWithResult<T> {
-    public CheckWithResult() {
-        this(true);
-    }
-
-    public CheckWithResult(boolean result) {
-        setSuccess(result);
-        setParam(new HashMap<>());
-    }
-
     @ApiModelProperty("是否正确true 正确 false 错误")
-    private boolean isSuccess;
+    private boolean isSuccess = true;
     @ApiModelProperty("结果对象")
     private T result;
     @ApiModelProperty("返回附加信息")
     private String msg;
     @ApiModelProperty("补充参数 用于多次检查时携带上一次参数提供下次使用")
-    private Map<String, String> param;
+    private Map<String, String> param = new HashMap<>();
 
     public boolean isSuccess() {
         return isSuccess;

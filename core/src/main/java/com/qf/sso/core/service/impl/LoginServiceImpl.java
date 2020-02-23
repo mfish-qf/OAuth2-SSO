@@ -96,14 +96,14 @@ public class LoginServiceImpl implements LoginService {
         String password = request.getParameter(SerConstant.PASSWORD);
         CheckWithResult<String> result = new CheckWithResult<>();
         if (StringUtils.isEmpty(username) || StringUtils.isEmpty(password)) {
-            result.setSuccess(false).setMsg(SerConstant.INVALID_USER_PASSWORD_DESCRIPTION)
-                    .getParam().put(SerConstant.ERROR_MSG, SerConstant.INVALID_USER_PASSWORD_DESCRIPTION);
+            result.setSuccess(false).setMsg(SerConstant.INVALID_USER_SECRET_DESCRIPTION)
+                    .getParam().put(SerConstant.ERROR_MSG, SerConstant.INVALID_USER_SECRET_DESCRIPTION);
             return result;
         }
         SSOUser user = userService.getUserByAccount(username);
         if (user == null) {
-            result.setSuccess(false).setMsg(SerConstant.INVALID_USER_PASSWORD_DESCRIPTION)
-                    .getParam().put(SerConstant.ERROR_MSG, SerConstant.INVALID_USER_PASSWORD_DESCRIPTION);
+            result.setSuccess(false).setMsg(SerConstant.INVALID_USER_SECRET_DESCRIPTION)
+                    .getParam().put(SerConstant.ERROR_MSG, SerConstant.INVALID_USER_SECRET_DESCRIPTION);
             return result;
         }
         MyUsernamePasswordToken token = new MyUsernamePasswordToken(username, password, false)
@@ -159,13 +159,13 @@ public class LoginServiceImpl implements LoginService {
         Map<String, String> params = new HashMap<>();
         if (count >= ERROR_COUNT) {
             String error = MessageFormat.format("{0},连续输错5次密码，账号锁定"
-                    , SerConstant.INVALID_USER_PASSWORD_DESCRIPTION);
+                    , SerConstant.INVALID_USER_SECRET_DESCRIPTION);
             log.error(userId + error);
             //规定时间内重试ERROR_COUNT次，抛出多次尝试异常
             throw new ExcessiveAttemptsException(error);
         }
         String error = MessageFormat.format("{0},连续出错{1}次,错误{2}次将被锁定"
-                , SerConstant.INVALID_USER_PASSWORD_DESCRIPTION, count, ERROR_COUNT);
+                , SerConstant.INVALID_USER_SECRET_DESCRIPTION, count, ERROR_COUNT);
         log.error(userId + error);
         throw new IncorrectCredentialsException(error);
     }

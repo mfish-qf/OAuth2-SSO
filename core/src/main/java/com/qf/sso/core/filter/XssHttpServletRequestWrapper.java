@@ -1,7 +1,7 @@
 package com.qf.sso.core.filter;
 
 import com.qf.sso.core.common.JSoupUtil;
-import io.micrometer.core.instrument.util.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
@@ -51,13 +51,15 @@ public class XssHttpServletRequestWrapper extends HttpServletRequestWrapper {
     @Override
     public Map<String, String[]> getParameterMap() {
         Map<String, String[]> map = super.getParameterMap();
-        map.forEach((k, v) -> {
-            if (v != null) {
-                for (int i = 0; i < v.length; i++) {
-                    v[i] = JSoupUtil.clean(v[i]);
+        if (map != null) {
+            map.forEach((k, v) -> {
+                if (v != null) {
+                    for (int i = 0; i < v.length; i++) {
+                        v[i] = JSoupUtil.clean(v[i]);
+                    }
                 }
-            }
-        });
+            });
+        }
         return map;
     }
 

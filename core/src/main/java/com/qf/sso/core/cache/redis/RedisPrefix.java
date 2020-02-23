@@ -14,7 +14,7 @@ public class RedisPrefix {
     //重置token前缀
     public static final String REFRESH_TOKEN = "refresh_token:";
     //存储用户密码数据 键:用户唯一ID
-    public static final String USER2PASSWORD = "user2password:";
+    public static final String USER2SECRET = "user2secret:";
     //存储账号到ID的对应关系 键:账号 account,email,phone任意一种
     public static final String ACCOUNT2ID = "account2id:";
     //存储用户信息 键:用户唯一ID
@@ -67,7 +67,7 @@ public class RedisPrefix {
      * @return
      */
     public static String buildUserPasswordKey(String userId) {
-        return USER2PASSWORD + userId;
+        return USER2SECRET + userId;
     }
 
     /**

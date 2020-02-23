@@ -27,7 +27,7 @@ import java.util.concurrent.TimeUnit;
 @Component
 public class RedisSessionDAO extends AbstractSessionDAO {
     @Resource(name = "sessionRedisTemplate")
-    private RedisTemplate<String,Object> sessionRedisTemplate;
+    private RedisTemplate<String, Object> sessionRedisTemplate;
     @Value("${redisSession.expire}")
     private long expire = 0l;
     @Value("${redisSession.keyPrefix}")
@@ -51,12 +51,7 @@ public class RedisSessionDAO extends AbstractSessionDAO {
             log.error("读取sessionId为空");
             throw new UnknownSessionException("读取sessionId为空");
         }
-        try {
-            return (SimpleSession) sessionRedisTemplate.opsForValue().get(getKey(sessionId));
-        } catch (Exception ex) {
-            log.error("读取session异常", ex);
-            return null;
-        }
+        return (SimpleSession) sessionRedisTemplate.opsForValue().get(getKey(sessionId));
     }
 
     @Override

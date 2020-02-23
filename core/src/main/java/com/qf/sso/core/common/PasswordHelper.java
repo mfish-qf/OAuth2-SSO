@@ -1,14 +1,12 @@
 package com.qf.sso.core.common;
 
 import io.swagger.annotations.ApiModel;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.crypto.SecureRandomNumberGenerator;
 import org.apache.shiro.crypto.hash.SimpleHash;
 import org.apache.shiro.util.ByteSource;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-
-import java.util.UUID;
-
 /**
  * @author qiufeng
  * @date 2020/2/13 16:32
@@ -39,7 +37,7 @@ public class PasswordHelper {
      * @return
      */
     public String encryptPassword(String userId, String password, String salt) {
-        if (password == null) {
+        if (StringUtils.isEmpty(password)) {
             return null;
         }
         return new SimpleHash(
@@ -49,7 +47,7 @@ public class PasswordHelper {
                 hashIterations).toHex();
     }
 
-    public static void main(String[] args){
-        System.out.println(buildSalt());
-    }
+//    public static void main(String[] args){
+//        System.out.println(buildSalt());
+//    }
 }
