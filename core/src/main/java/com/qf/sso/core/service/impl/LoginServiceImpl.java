@@ -9,6 +9,7 @@ import com.qf.sso.core.service.LoginService;
 import com.qf.sso.core.service.UserService;
 import com.qf.sso.core.validator.GetCodeValidator;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.ExcessiveAttemptsException;
 import org.apache.shiro.authc.IncorrectCredentialsException;
@@ -16,7 +17,6 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.support.atomic.RedisAtomicLong;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
-import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -34,7 +34,7 @@ import java.util.concurrent.TimeUnit;
 public class LoginServiceImpl implements LoginService {
     @Resource
     UserService userService;
-    @Resource(name = "redisTemplate")
+    @Resource
     RedisTemplate<String, Object> redisTemplate;
     @Resource
     GetCodeValidator getCodeValidator;
@@ -74,13 +74,12 @@ public class LoginServiceImpl implements LoginService {
     }
 
     /**
-     * 登录用户验证逻辑
+     * web请求登录 构建model返回值
      *
      * @param model
      * @param request
      * @return
      */
-    @Override
     public boolean login(Model model, HttpServletRequest request) {
         CheckWithResult<String> result = login(request);
         for (Map.Entry<String, String> entry : result.getParam().entrySet()) {
@@ -89,11 +88,22 @@ public class LoginServiceImpl implements LoginService {
         return result.isSuccess();
     }
 
+    /**
+     * 登录用户验证逻辑
+     *
+     * @param request
+     * @return
+     */
     @Override
     public CheckWithResult<String> login(HttpServletRequest request) {
         SerConstant.LoginType loginType = SerConstant.LoginType.getLoginType(request.getParameter(SerConstant.LOGIN_TYPE));
         String username = request.getParameter(SerConstant.USERNAME);
         String password = request.getParameter(SerConstant.PASSWORD);
+        String rememberMe = request.getParameter(SerConstant.REMEMBER_ME);
+        boolean remember = false;
+        if (!StringUtils.isEmpty(rememberMe)) {
+            remember = Boolean.parseBoolean(rememberMe);
+        }
         CheckWithResult<String> result = new CheckWithResult<>();
         if (StringUtils.isEmpty(username) || StringUtils.isEmpty(password)) {
             result.setSuccess(false).setMsg(SerConstant.INVALID_USER_SECRET_DESCRIPTION)
@@ -106,7 +116,7 @@ public class LoginServiceImpl implements LoginService {
                     .getParam().put(SerConstant.ERROR_MSG, SerConstant.INVALID_USER_SECRET_DESCRIPTION);
             return result;
         }
-        MyUsernamePasswordToken token = new MyUsernamePasswordToken(username, password, false)
+        MyUsernamePasswordToken token = new MyUsernamePasswordToken(username, password, remember)
                 .setUserId(user.getId()).setLoginType(loginType);
         try {
             SecurityUtils.getSubject().login(token);
@@ -168,6 +178,31 @@ public class LoginServiceImpl implements LoginService {
                 , SerConstant.INVALID_USER_SECRET_DESCRIPTION, count, ERROR_COUNT);
         log.error(userId + error);
         throw new IncorrectCredentialsException(error);
+    }
+
+    @Override
+    public void sendMsg(String phone, String msg) {
+        //TODO 根据具体短信网关实现
+    }
+
+    @Override
+    public void saveSmsCode(String phone, String code) {
+        redisTemplate.opsForValue().set(RedisPrefix.buildSMSCodeKey(phone), code, 5, TimeUnit.MINUTES);
+    }
+
+    @Override
+    public String getSmsCode(String phone) {
+        return (String) redisTemplate.opsForValue().get(RedisPrefix.buildSMSCodeKey(phone));
+    }
+
+    @Override
+    public void saveSmsCodeTime(String phone) {
+        redisTemplate.opsForValue().set(RedisPrefix.buildSMSCodeTimeKey(phone), "", 1, TimeUnit.MINUTES);
+    }
+
+    @Override
+    public long getSmsCodeTime(String phone) {
+        return redisTemplate.getExpire(RedisPrefix.buildSMSCodeTimeKey(phone));
     }
 
     /**

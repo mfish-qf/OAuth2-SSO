@@ -18,6 +18,7 @@ public abstract class AbstractCodeValidator implements IBaseValidator<Authorizat
 
     /**
      * 获取authCode信息
+     *
      * @param request
      * @param result
      * @return

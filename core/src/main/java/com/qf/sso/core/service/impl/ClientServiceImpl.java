@@ -16,7 +16,7 @@ import javax.annotation.Resource;
 public class ClientServiceImpl implements ClientService {
     @Resource
     ClientTempCache clientTempCache;
-    @Resource(name = "redisTemplate")
+    @Resource
     private RedisTemplate<String, Object> redisTemplate;
 
     /**

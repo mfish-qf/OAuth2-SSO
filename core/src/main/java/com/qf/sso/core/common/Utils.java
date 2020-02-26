@@ -63,4 +63,11 @@ public class Utils {
         return ip;
     }
 
+    /**
+     * 生成6位数验证码
+     * @return
+     */
+    public static String buildCode(){
+        return String.valueOf((int)(Math.random()*900000+100000));
+    }
 }

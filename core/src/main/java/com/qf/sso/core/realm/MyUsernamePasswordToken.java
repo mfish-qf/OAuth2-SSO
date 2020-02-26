@@ -1,8 +1,6 @@
 package com.qf.sso.core.realm;
 
 import com.qf.sso.core.common.SerConstant;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
 import org.apache.shiro.authc.UsernamePasswordToken;
 
 /**
@@ -15,7 +13,7 @@ public class MyUsernamePasswordToken extends UsernamePasswordToken {
     private String userId;
 
     //登录类型
-    private SerConstant.LoginType loginType = SerConstant.LoginType.密码;
+    private SerConstant.LoginType loginType = SerConstant.LoginType.密码登录;
 
     public MyUsernamePasswordToken(String username, String password) {
         super(username, password);

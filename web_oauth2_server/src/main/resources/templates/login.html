@@ -17,8 +17,10 @@
             float: none;
             text-align: left;
         }
-        .sso-form{
-            margin-top: 10px;width: 300px
+
+        .sso-form {
+            margin-top: 10px;
+            width: 300px
         }
     </style>
 </head>
@@ -39,7 +41,7 @@
                     <li v-bind:class="{ active: qrCodeVisible }"><a href="#" @click.prevent="showQrCode">扫码登录</a></li>
                 </ul>
             </div>
-            <div v-show="errorVisible" style="margin-top: 10px;">{{errorMsg}}</div>
+            <div v-show="errorVisible" style="margin-top: 10px;color: red">{{errorMsg}}</div>
             <div v-show="userPasswordVisible" class="sso-form">
                 <form id="login" action="" method="post">
                     <div class="form-group">
@@ -47,15 +49,17 @@
                         <span class="input-group-addon">
                             <span class="glyphicon glyphicon-user"></span>
                         </span>
-                            <input type="text" name="username" v-model="username" class="form-control" placeholder="用户名" >
+                            <input type="text" name="username" v-model="username" class="form-control"
+                                   placeholder="用户名">
                         </div>
                     </div>
                     <div class="form-group">
                         <div class="input-group" style="text-align: left">
                             <span class="input-group-addon">
-                                <span class="glyphicon glyphicon-eye-open"></span>
+                                <span class="glyphicon glyphicon-lock"></span>
                             </span>
-                            <input type="password" name="password" v-model="password" class="form-control" placeholder="密码" >
+                            <input type="password" name="password" v-model="password" class="form-control"
+                                   placeholder="密码">
                         </div>
                     </div>
                     <!--下面是记住我输入框-->
@@ -69,23 +73,29 @@
                 </form>
             </div>
             <div v-show="phoneSmsCodeVisible" class="sso-form">
-                <div class="form-group">
-                    <div class="input-group">
+                <form id="smsLogin" method="post">
+                    <div class="form-group">
+                        <div class="input-group">
                         <span class="input-group-addon">
                             <span class="glyphicon glyphicon-user"></span>
                         </span>
-                        <input type="text" name="username" class="form-control" placeholder="手机号">
+                            <input type="text" name="username" v-model="phone" class="form-control" placeholder="手机号">
+                        </div>
                     </div>
-                </div>
-                <div class="form-group">
-                    <div class="input-group" style="text-align: left">
+                    <div class="form-group">
+                        <div class="input-group" style="text-align: left">
                             <span class="input-group-addon">
                                 <span class="glyphicon glyphicon-eye-open"></span>
                             </span>
-                        <input type="text" name="code" class="form-control" placeholder="验证码">
+                            <input type="text" name="password" class="form-control" placeholder="验证码" v-model="codeValue">
+                            <span class="input-group-btn">
+                            <button class="btn btn-default btn-block" style="width: 80px" type="button" @click="sendMsg" :disabled="codeDisabled">{{codeButton}}</button>
+                        </span>
+                        </div>
                     </div>
-                </div>
-                <button type="button" class="btn btn-primary" @click="login">登录</button>
+                    <input type="hidden" v-model="loginType" name="loginType"/>
+                    <button type="button" class="btn btn-primary" @click="smsLogin">登录</button>
+                </form>
             </div>
             <div v-show="qrCodeVisible" class="sso-form">
                 <p>二维码</p>
@@ -100,25 +110,40 @@
             userPasswordVisible: false,
             phoneSmsCodeVisible: false,
             qrCodeVisible: false,
+            phone: '',
             username: '',
             password: '',
             loginType: '',
             errorVisible: false,
             errorMsg: '',
-            rememberMe: false
+            rememberMe: false,
+            codeValue: '',
+            codeButton: '验证码',
+            codeDisabled: false
         },
         methods: {
             login() {
                 $('#login').submit();
-                // $.ajax({
-                //     type: "POST",
-                //     data: "username=" + this.username + "&password=" + this.password
-                //         + "&rememberMe=" + this.rememberMe + "&loginType=" + this.loginType,
-                //     dataType: "json",
-                //     success: function (result) {
-                //         console.log(result);
-                //     }
-                // });
+            },
+            smsLogin(){
+                $('#smsLogin').submit();
+            },
+            sendMsg() {
+                $.ajax({
+                    url: "/sendMsg",
+                    type: "POST",
+                    data: "phone=" + this.phone,
+                    dataType: "json",
+                    success: function (result) {
+                        if (result.success) {
+                            //测试环境将验证码返回，生成环境删除此方法
+                            vm.codeValue = result.result;
+                            vm.resetCode();
+                        } else {
+                            vm.showError(result.msg);
+                        }
+                    }
+                });
             },
             showUserPassword() {
                 this.userPasswordVisible = true;
@@ -138,8 +163,12 @@
                 this.userPasswordVisible = false;
                 this.loginType = "qr_code";
             },
-            showError() {
-                this.errorMsg = $('#errorMsg').val();
+            showError(error) {
+                if (error != null && error != '') {
+                    this.errorMsg = error;
+                } else {
+                    this.errorMsg = $('#errorMsg').val();
+                }
                 if (this.errorMsg !== '' && this.errorMsg !== undefined) {
                     this.errorVisible = true;
                 }
@@ -148,6 +177,7 @@
                 this.loginType = $('#loginType').val();
                 switch (this.loginType) {
                     case "phone_smsCode":
+                        this.phone = $('#username').val();
                         this.showPhoneSmsCode();
                         break;
                     case "qr_code":
@@ -156,7 +186,22 @@
                     default:
                         this.username = $('#username').val();
                         this.showUserPassword();
+                        break;
                 }
+            },
+            resetCode() {
+                let second = 60;
+                let codeTime = setInterval(function () {
+                    second -= 1;
+                    if (second > 0) {
+                        vm.codeButton = second;
+                        vm.codeDisabled = true;
+                    } else {
+                        clearInterval(codeTime);
+                        vm.codeButton = "验证码";
+                        vm.codeDisabled = false;
+                    }
+                }, 1000);
             }
         },
         created: function () {

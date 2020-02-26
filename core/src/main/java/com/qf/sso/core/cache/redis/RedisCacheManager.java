@@ -14,7 +14,7 @@ import javax.annotation.Resource;
 @Component
 public class RedisCacheManager implements CacheManager {
 
-    @Resource(name = "redisCache")
+    @Resource
     private RedisCache cache;
 
     @Override

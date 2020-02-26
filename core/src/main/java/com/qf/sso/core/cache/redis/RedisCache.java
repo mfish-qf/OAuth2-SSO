@@ -14,9 +14,9 @@ import java.util.concurrent.TimeUnit;
  * @author qiufeng
  * @date 2020/2/11 19:18
  */
-@Component("redisCache")
+@Component
 public class RedisCache implements Cache<String, Object> {
-    @Resource(name = "redisTemplate")
+    @Resource
     RedisTemplate<String, Object> redisTemplate;
     @Value("${redisCache.expire}")
     private long expire = 0l;

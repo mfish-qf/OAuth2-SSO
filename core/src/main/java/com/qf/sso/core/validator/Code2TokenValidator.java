@@ -34,7 +34,7 @@ public class Code2TokenValidator extends MultipleValidator {
      * @param result
      * @return
      */
-    public CheckWithResult<?> validateCode(HttpServletRequest request, CheckWithResult<AuthorizationCode> result) {
+    public CheckWithResult<AuthorizationCode> validateCode(HttpServletRequest request, CheckWithResult<AuthorizationCode> result) {
         return validate(request, result, validateCodeList);
     }
 

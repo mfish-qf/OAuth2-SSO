@@ -1,13 +1,21 @@
 package com.qf.sso.core.config;
 
+import com.qf.sso.core.common.SerConstant;
 import com.qf.sso.core.credentials.MyHashedCredentialsMatcher;
 import com.qf.sso.core.cache.redis.RedisSessionDAO;
+import com.qf.sso.core.credentials.QRCodeCredentialsMatcher;
+import com.qf.sso.core.credentials.SmsCredentialsMatcher;
+import com.qf.sso.core.realm.MultipleRealm;
+import com.qf.sso.core.realm.PhoneSmsRealm;
+import com.qf.sso.core.realm.QRCodeRealm;
 import com.qf.sso.core.realm.UserPasswordRealm;
 import com.qf.sso.core.cache.redis.RedisCacheManager;
 import lombok.extern.slf4j.Slf4j;
 
 import org.apache.shiro.codec.Base64;
 import org.apache.shiro.mgt.SecurityManager;
+import org.apache.shiro.realm.AuthorizingRealm;
+import org.apache.shiro.realm.Realm;
 import org.apache.shiro.spring.LifecycleBeanPostProcessor;
 import org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
@@ -20,6 +28,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -55,6 +65,7 @@ public class ShiroConfig {
         //配置退出 过滤器,其中的具体的退出代码Shiro已经替我们实现了
         filterChainDefinitionMap.put("/logout", "logout");
         filterChainDefinitionMap.put("/oauth2/**", "anon");
+        filterChainDefinitionMap.put("/sendMsg", "anon");
         filterChainDefinitionMap.put("/css/**", "anon");
         filterChainDefinitionMap.put("/img/**", "anon");
         filterChainDefinitionMap.put("/js/**", "anon");
@@ -126,6 +137,15 @@ public class ShiroConfig {
         return myHashedCredentialsMatcher;
     }
 
+    @Bean
+    public SmsCredentialsMatcher smsCredentialsMatcher(){
+        return new SmsCredentialsMatcher();
+    }
+
+    @Bean
+    public QRCodeCredentialsMatcher qrCodeCredentialsMatcher(){
+        return new QRCodeCredentialsMatcher();
+    }
     /**
      * 用户密码登录方式初始化
      *
@@ -137,6 +157,33 @@ public class ShiroConfig {
         userPasswordRealm.setCredentialsMatcher(myHashedCredentialsMatcher());
         userPasswordRealm.setCachingEnabled(false);
         return userPasswordRealm;
+    }
+
+    @Bean
+    public PhoneSmsRealm phoneSmsRealm() {
+        PhoneSmsRealm phoneSmsRealm = new PhoneSmsRealm();
+        phoneSmsRealm.setCredentialsMatcher(smsCredentialsMatcher());
+        phoneSmsRealm.setCachingEnabled(false);
+        return phoneSmsRealm;
+    }
+
+    @Bean
+    public QRCodeRealm qrCodeRealm() {
+        QRCodeRealm qrCodeRealm = new QRCodeRealm();
+        qrCodeRealm.setCredentialsMatcher(qrCodeCredentialsMatcher());
+        qrCodeRealm.setCachingEnabled(false);
+        return qrCodeRealm;
+    }
+
+    @Bean
+    public MultipleRealm multipleRealm() {
+        MultipleRealm multipleRealm = new MultipleRealm();
+        Map<SerConstant.LoginType, AuthorizingRealm> map = new HashMap<>();
+        map.put(SerConstant.LoginType.密码登录, userPasswordRealm());
+        map.put(SerConstant.LoginType.扫码登录, qrCodeRealm());
+        map.put(SerConstant.LoginType.短信登录, phoneSmsRealm());
+        multipleRealm.setMyRealms(map);
+        return multipleRealm;
     }
 
     /**
@@ -186,8 +233,9 @@ public class ShiroConfig {
     public SecurityManager securityManager(DefaultWebSessionManager sessionManager, RedisCacheManager redisCacheManager) {
         DefaultWebSecurityManager securityManager = new DefaultWebSecurityManager();
         //设置Realm，用于获取认证凭证
-        securityManager.setRealm(userPasswordRealm());
-
+//        securityManager.setRealm(userPasswordRealm());
+        //自定义多种认证方式
+        securityManager.setAuthenticator(multipleRealm());
         //设置session管理方式
         securityManager.setSessionManager(sessionManager);
         securityManager.setCacheManager(redisCacheManager);

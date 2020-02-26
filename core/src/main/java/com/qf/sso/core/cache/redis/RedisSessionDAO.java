@@ -26,7 +26,7 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 @Component
 public class RedisSessionDAO extends AbstractSessionDAO {
-    @Resource(name = "sessionRedisTemplate")
+    @Resource
     private RedisTemplate<String, Object> sessionRedisTemplate;
     @Value("${redisSession.expire}")
     private long expire = 0l;

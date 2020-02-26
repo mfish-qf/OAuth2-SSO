@@ -29,6 +29,10 @@ public class RedisPrefix {
     public static final String USER2DEVICE_ID = "user2device_id:";
     //通过设备Id查找相关设备token列表
     public static final String DEVICE2TOKEN = "device2token:";
+    //短信验证码
+    public static final String SMS_CODE = "sms_code:";
+    //短信验证码倒计时 一分钟内部允许防止重复发送
+    public static final String SMS_CODE_TIME = "sms_code_time:";
 
     /**
      * 构建交换code
@@ -122,6 +126,7 @@ public class RedisPrefix {
 
     /**
      * 构建用户查找当前登录设备键
+     *
      * @param userId
      * @param deviceType
      * @return
@@ -132,11 +137,30 @@ public class RedisPrefix {
 
     /**
      * 构建设备查找相关token信息键
+     *
      * @param deviceId
      * @return
      */
     public static String buildDevice2TokenKey(String deviceId) {
         return DEVICE2TOKEN + deviceId;
+    }
+
+    /**
+     * 构建短信验证码缓存key
+     * @param phone
+     * @return
+     */
+    public static String buildSMSCodeKey(String phone) {
+        return SMS_CODE + phone;
+    }
+
+    /**
+     * 构建短信验证码倒计时key
+     * @param phone
+     * @return
+     */
+    public static String buildSMSCodeTimeKey(String phone) {
+        return SMS_CODE_TIME + phone;
     }
 
 }

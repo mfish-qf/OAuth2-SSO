@@ -24,7 +24,7 @@ public class DaoTest {
     @Test
     public void testUserDao() {
         SSOUser user = userDao.getUserByAccount("18952006692");
-        user = userDao.getUserByAccount("qiufeng9862@qq.com");
+        user = userDao.getUserByAccount("admin");
     }
 
     @Test

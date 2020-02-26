@@ -11,6 +11,7 @@ public class SerConstant {
     public static final String INVALID_USER_ID_DESCRIPTION = "登录失败:错误的用户ID";
     public static final String USERNAME = "username";
     public static final String PASSWORD = "password";
+    public static final String REMEMBER_ME = "rememberMe";
     public static final String LOGIN_TYPE = "loginType";
     public static final String ERROR_MSG = "errorMsg";
 
@@ -18,18 +19,18 @@ public class SerConstant {
      * 登录类型
      */
     public enum LoginType {
-        // 微信确认登录
-        微信认证("weChat_recognition", 0),
         // 用户名密码登录
-        密码("user_password", 1),
+        密码登录("user_password", 0),
         // 短信验证码登录
-        一次一密("phone_smsCode", 2),
-        // 人脸识别登录
-        人脸识别("face_recognition", 3),
+        短信登录("phone_smsCode", 1),
         // 扫码
-        扫码("qr_code", 4),
+        扫码登录("qr_code", 2),
         // 同一个session免密登录
-        直接("direct", 5);
+        直接登录("direct", 3),
+        // 微信确认登录
+        微信登录("weChat_recognition", 4),
+        // 人脸识别登录
+        人脸识别("face_recognition", 5);
 
         private String loginType;
         private int index;
@@ -50,7 +51,7 @@ public class SerConstant {
                     return type;
                 }
             }
-            return LoginType.密码;
+            return LoginType.密码登录;
         }
 
         public static LoginType getLoginType(int index) {
@@ -59,7 +60,7 @@ public class SerConstant {
                     return type;
                 }
             }
-            return LoginType.密码;
+            return LoginType.密码登录;
         }
 
         public int getIndex() {

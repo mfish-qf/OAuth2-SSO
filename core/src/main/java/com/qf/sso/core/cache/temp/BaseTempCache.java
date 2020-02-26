@@ -15,7 +15,7 @@ import java.util.concurrent.TimeUnit;
  */
 @Data
 public abstract class BaseTempCache<T> {
-    @Resource(name = "redisTemplate")
+    @Resource
     RedisTemplate<String,Object> redisTemplate;
 
     /**

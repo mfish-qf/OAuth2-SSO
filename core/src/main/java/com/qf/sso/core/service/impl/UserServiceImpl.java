@@ -23,7 +23,7 @@ import java.util.*;
 @Slf4j
 public class UserServiceImpl implements UserService {
     @Resource
-    private PasswordHelper passwordHelper;
+    PasswordHelper passwordHelper;
     @Resource
     SSOUserDao ssoUserDao;
     @Resource
@@ -92,7 +92,7 @@ public class UserServiceImpl implements UserService {
      */
     public CheckWithResult<SSOUser> verifyPassword(String password) {
         CheckWithResult<SSOUser> result = new CheckWithResult<>();
-        if(StringUtils.isEmpty(password)){
+        if (StringUtils.isEmpty(password)) {
             return result.setSuccess(false).setMsg("密码不允许为空");
         }
         if (password.length() < 8 || password.length() > 16) {
