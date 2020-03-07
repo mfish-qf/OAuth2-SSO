@@ -10,6 +10,7 @@ import com.qf.sso.core.service.UserService;
 import com.qf.sso.core.validator.GetCodeValidator;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.oltu.oauth2.common.OAuth;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.ExcessiveAttemptsException;
 import org.apache.shiro.authc.IncorrectCredentialsException;
@@ -96,9 +97,8 @@ public class LoginServiceImpl implements LoginService {
      */
     @Override
     public CheckWithResult<String> login(HttpServletRequest request) {
-        SerConstant.LoginType loginType = SerConstant.LoginType.getLoginType(request.getParameter(SerConstant.LOGIN_TYPE));
-        String username = request.getParameter(SerConstant.USERNAME);
-        String password = request.getParameter(SerConstant.PASSWORD);
+        String username = request.getParameter(OAuth.OAUTH_USERNAME);
+        String password = request.getParameter(OAuth.OAUTH_PASSWORD);
         String rememberMe = request.getParameter(SerConstant.REMEMBER_ME);
         boolean remember = false;
         if (!StringUtils.isEmpty(rememberMe)) {
@@ -116,6 +116,7 @@ public class LoginServiceImpl implements LoginService {
                     .getParam().put(SerConstant.ERROR_MSG, SerConstant.INVALID_USER_SECRET_DESCRIPTION);
             return result;
         }
+        SerConstant.LoginType loginType = SerConstant.LoginType.getLoginType(request.getParameter(SerConstant.LOGIN_TYPE));
         MyUsernamePasswordToken token = new MyUsernamePasswordToken(username, password, remember)
                 .setUserId(user.getId()).setLoginType(loginType);
         try {
@@ -140,7 +141,8 @@ public class LoginServiceImpl implements LoginService {
             log.info("用户:" + user.getId() + "登录客户端:" + "" + "失败" + ex.getMessage());
             return result;
         } finally {
-            result.getParam().put(SerConstant.USERNAME, username);
+            result.setResult(user.getId());
+            result.getParam().put(OAuth.OAUTH_USERNAME, username);
             result.getParam().put(SerConstant.LOGIN_TYPE, loginType.toString());
         }
     }

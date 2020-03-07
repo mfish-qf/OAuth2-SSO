@@ -41,6 +41,9 @@
             <if test="salt != null">
                 salt = #{salt},
             </if>
+            <if test="openid != null">
+                openid = #{openid},
+            </if>
             update_time = #{updateTime}
         </set>
         where t.id = #{id}

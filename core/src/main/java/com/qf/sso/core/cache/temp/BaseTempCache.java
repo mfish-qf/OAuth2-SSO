@@ -16,21 +16,24 @@ import java.util.concurrent.TimeUnit;
 @Data
 public abstract class BaseTempCache<T> {
     @Resource
-    RedisTemplate<String,Object> redisTemplate;
+    RedisTemplate<String, Object> redisTemplate;
+    private static final long cacheTime = 7;
 
     /**
      * 构建key
+     *
      * @param key
      * @return
      */
-    public abstract String buildKey(String key);
+    protected abstract String buildKey(String key);
 
     /**
      * 缓存中不存在，从数据库中获取
+     *
      * @param key
      * @return
      */
-    public abstract T getFromDB(String key);
+    protected abstract T getFromDB(String key);
 
     /**
      * 获取缓存信息
@@ -46,6 +49,8 @@ public abstract class BaseTempCache<T> {
         String key = buildKey(param);
         T value = (T) redisTemplate.opsForValue().get(key);
         if (value != null) {
+            //缓存激活 延长更新缓存时间
+            redisTemplate.expire(key, cacheTime, TimeUnit.DAYS);
             return value;
         }
         RedisAtomicLong ral = new RedisAtomicLong(RedisPrefix.buildAtomicCountKey(key)
@@ -67,6 +72,7 @@ public abstract class BaseTempCache<T> {
 
     /**
      * 更新缓存
+     *
      * @param key 传入键未拼接前缀
      * @param t
      */
@@ -76,11 +82,12 @@ public abstract class BaseTempCache<T> {
 
     /**
      * 设置缓存
-     * @param key 已拼接前缀
+     *
+     * @param key   已拼接前缀
      * @param value
      */
     public void setCacheInfo(String key, T value) {
-        redisTemplate.opsForValue().set(key, value, 7, TimeUnit.DAYS);
+        redisTemplate.opsForValue().set(key, value, cacheTime, TimeUnit.DAYS);
     }
 
 }

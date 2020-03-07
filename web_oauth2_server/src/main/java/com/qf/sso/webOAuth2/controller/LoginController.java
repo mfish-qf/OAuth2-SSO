@@ -4,7 +4,9 @@ import com.qf.sso.core.common.CheckWithResult;
 import com.qf.sso.core.common.Utils;
 import com.qf.sso.core.service.LoginService;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,8 +14,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * @author qiufeng
@@ -21,6 +21,7 @@ import java.util.Map;
  */
 @Api(tags = "登录")
 @Controller
+@Slf4j
 public class LoginController {
     @Resource
     LoginService loginService;
@@ -38,8 +39,9 @@ public class LoginController {
      */
     @ApiOperation("发送短信")
     @PostMapping("/sendMsg")
-    public @ResponseBody
-    CheckWithResult<String> sendMsg(String phone) {
+    @ResponseBody
+    @ApiImplicitParam(name = "phone", value = "手机号", paramType = "query", required = true)
+    public CheckWithResult<String> sendMsg(String phone) {
         if (StringUtils.isEmpty(phone)) {
             return new CheckWithResult<String>().setSuccess(false)
                     .setMsg("错误:手机号不允许为空");
@@ -61,5 +63,4 @@ public class LoginController {
         //测试环境返回生成验证码值,生产环境需要隐藏短信码返回值
         return new CheckWithResult<String>().setResult(code);
     }
-
 }

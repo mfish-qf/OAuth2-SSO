@@ -17,12 +17,12 @@ public class ClientTempCache extends BaseTempCache<OAuthClient> {
     ClientDao clientDao;
 
     @Override
-    public String buildKey(String key) {
+    protected String buildKey(String key) {
         return RedisPrefix.buildClientKey(key);
     }
 
     @Override
-    public OAuthClient getFromDB(String key) {
+    protected OAuthClient getFromDB(String key) {
         return clientDao.getClientById(key);
     }
 }

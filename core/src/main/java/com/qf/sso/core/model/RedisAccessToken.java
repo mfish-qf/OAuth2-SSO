@@ -10,9 +10,9 @@ import lombok.EqualsAndHashCode;
  * @date 2020/2/17 15:04
  */
 @ApiModel("存储的accessToken信息")
-@EqualsAndHashCode(callSuper=true)
+@EqualsAndHashCode(callSuper = true)
 @Data
-public class RedisAccessToken extends AuthorizationCode{
+public class RedisAccessToken extends AuthorizationCode {
     @ApiModelProperty("获取token时传入sessionid")
     private String tokenSessionId;
     @ApiModelProperty("客户端秘钥")

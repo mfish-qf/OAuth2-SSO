@@ -1,3 +1,3 @@
 spring:
   application:
-    name: sso_web
+    name: sso_web_server

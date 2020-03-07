@@ -18,7 +18,7 @@ public class PhoneSmsRealm extends BaseRealm {
     LoginService loginService;
 
     @Override
-    protected AuthenticationInfo buildAuthenticationInfo(SSOUser user) {
+    protected AuthenticationInfo buildAuthenticationInfo(SSOUser user, AuthenticationToken authenticationToken) {
         String code = loginService.getSmsCode(user.getPhone());
         if (StringUtils.isEmpty(code)) {
             throw new IncorrectCredentialsException(SerConstant.INVALID_USER_SECRET_DESCRIPTION);

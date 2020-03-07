@@ -20,12 +20,12 @@ public class Account2IdTempCache extends BaseTempCache<String> {
     SSOUserDao ssoUserDao;
 
     @Override
-    public String buildKey(String key) {
+    protected String buildKey(String key) {
         return RedisPrefix.buildAccount2IdKey(key);
     }
 
     @Override
-    public String getFromDB(String key) {
+    protected String getFromDB(String key) {
         SSOUser user = ssoUserDao.getUserByAccount(key);
         if (user == null) {
             log.info(MessageFormat.format("错误:账号{0}未找到对应用户!", key));

@@ -17,12 +17,12 @@ public class UserTempCache extends BaseTempCache<SSOUser> {
     SSOUserDao ssoUserDao;
 
     @Override
-    public String buildKey(String key) {
+    protected String buildKey(String key) {
         return RedisPrefix.buildUserDetailKey(key);
     }
 
     @Override
-    public SSOUser getFromDB(String key) {
+    protected SSOUser getFromDB(String key) {
         return ssoUserDao.getUserByAccount(key);
     }
 

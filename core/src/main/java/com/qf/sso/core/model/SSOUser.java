@@ -19,4 +19,6 @@ public class SSOUser extends UserInfo{
     private String password;
     @ApiModelProperty("旧密码")
     private String oldPassword;
+    @ApiModelProperty("微信openid")
+    private String openid;
 }

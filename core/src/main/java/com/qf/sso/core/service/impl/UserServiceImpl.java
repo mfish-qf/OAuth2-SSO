@@ -58,6 +58,7 @@ public class UserServiceImpl implements UserService {
         }
         user.setUpdateTime(new Date());
         ssoUserDao.update(user);
+        //更新用户信息,刷新redis 用户缓存
         userTempCache.updateCacheInfo(userId, user);
         return result.setSuccess(true).setMsg("修改成功").setResult(user);
     }
@@ -67,6 +68,9 @@ public class UserServiceImpl implements UserService {
         CheckWithResult<SSOUser> result = new CheckWithResult<SSOUser>().setResult(user);
         int res = ssoUserDao.update(user);
         if (res > 0) {
+            //更新用户信息,刷新redis 用户缓存
+            user = ssoUserDao.getUserById(user.getId());
+            userTempCache.updateCacheInfo(user.getId(), user);
             return result;
         }
         return result.setSuccess(false).setMsg("未找到用户信息更新数据");

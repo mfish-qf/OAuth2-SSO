@@ -1,9 +1,6 @@
 package com.qf.sso.webOAuth2.controller;
 
 import com.qf.sso.core.annotation.LogAnnotation;
-import com.qf.sso.core.cache.UserTokenCache;
-import com.qf.sso.core.common.CheckWithResult;
-import com.qf.sso.core.common.SerConstant;
 import com.qf.sso.core.model.AuthorizationCode;
 import com.qf.sso.core.service.LoginService;
 import com.qf.sso.core.service.OAuth2Service;
@@ -19,7 +16,6 @@ import org.apache.oltu.oauth2.common.exception.OAuthProblemException;
 import org.apache.oltu.oauth2.common.exception.OAuthSystemException;
 import org.apache.oltu.oauth2.common.message.OAuthResponse;
 import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.subject.Subject;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -51,10 +47,10 @@ public class AuthorizeController {
     @ApiOperation("认证接口")
     @GetMapping("/authorize")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "response_type", value = "返回类型", paramType = "query", required = true),
-            @ApiImplicitParam(name = "client_id", value = "客户端ID", paramType = "query", required = true),
-            @ApiImplicitParam(name = "redirect_uri", value = "回调地址", paramType = "query", required = true),
-            @ApiImplicitParam(name = "state", value = "状态", paramType = "query")
+            @ApiImplicitParam(name = OAuth.OAUTH_RESPONSE_TYPE, value = "返回类型", paramType = "query", required = true),
+            @ApiImplicitParam(name = OAuth.OAUTH_CLIENT_SECRET, value = "客户端ID", paramType = "query", required = true),
+            @ApiImplicitParam(name = OAuth.OAUTH_REDIRECT_URI, value = "回调地址", paramType = "query", required = true),
+            @ApiImplicitParam(name = OAuth.OAUTH_STATE, value = "状态", paramType = "query")
     })
     public Object getAuthorize(Model model, HttpServletRequest request)
             throws OAuthProblemException, OAuthSystemException, URISyntaxException {
@@ -69,12 +65,12 @@ public class AuthorizeController {
     @ApiOperation("认证接口")
     @PostMapping("/authorize")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "response_type", value = "返回类型", paramType = "query", required = true),
-            @ApiImplicitParam(name = "client_id", value = "客户端ID", paramType = "query", required = true),
-            @ApiImplicitParam(name = "redirect_uri", value = "回调地址", paramType = "query", required = true),
-            @ApiImplicitParam(name = "state", value = "状态", paramType = "query"),
-            @ApiImplicitParam(name = "username", value = "账号，手机，email", paramType = "query", required = true),
-            @ApiImplicitParam(name = "password", value = "密码", paramType = "query", required = true)
+            @ApiImplicitParam(name = OAuth.OAUTH_RESPONSE_TYPE, value = "返回类型", paramType = "query", required = true),
+            @ApiImplicitParam(name = OAuth.OAUTH_CLIENT_SECRET, value = "客户端ID", paramType = "query", required = true),
+            @ApiImplicitParam(name = OAuth.OAUTH_REDIRECT_URI, value = "回调地址", paramType = "query", required = true),
+            @ApiImplicitParam(name = OAuth.OAUTH_STATE, value = "状态", paramType = "query"),
+            @ApiImplicitParam(name = OAuth.OAUTH_USERNAME, value = "账号，手机，email", paramType = "query", required = true),
+            @ApiImplicitParam(name = OAuth.OAUTH_PASSWORD, value = "密码", paramType = "query", required = true)
     })
     @LogAnnotation("getCode")
     public Object authorize(Model model, HttpServletRequest request)

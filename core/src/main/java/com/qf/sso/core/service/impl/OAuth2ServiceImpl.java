@@ -1,9 +1,13 @@
 package com.qf.sso.core.service.impl;
 
 import com.qf.sso.core.cache.redis.RedisPrefix;
+import com.qf.sso.core.exception.OAuthValidateException;
 import com.qf.sso.core.model.AuthorizationCode;
 import com.qf.sso.core.model.RedisAccessToken;
+import com.qf.sso.core.model.SSOUser;
+import com.qf.sso.core.model.UserInfo;
 import com.qf.sso.core.service.OAuth2Service;
+import com.qf.sso.core.service.UserService;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.oltu.oauth2.as.issuer.MD5Generator;
 import org.apache.oltu.oauth2.as.issuer.OAuthIssuer;
@@ -32,6 +36,8 @@ public class OAuth2ServiceImpl implements OAuth2Service {
 
     @Resource
     RedisTemplate<String, Object> redisTemplate;
+    @Resource
+    UserService userService;
 
     @Value("${oauth2.expire.code}")
     private long codeExpire = 180;
@@ -161,5 +167,16 @@ public class OAuth2ServiceImpl implements OAuth2Service {
     @Override
     public void delRefreshToken(String token) {
         redisTemplate.delete(RedisPrefix.buildRefreshTokenKey(token));
+    }
+
+    @Override
+    public UserInfo getUserInfo(String userId) throws InvocationTargetException, IllegalAccessException {
+        SSOUser user = userService.getUserById(userId);
+        if (user == null) {
+            throw new OAuthValidateException("错误:未获取到用户信息！");
+        }
+        UserInfo userInfo = new UserInfo();
+        BeanUtils.copyProperties(userInfo, user);
+        return userInfo;
     }
 }

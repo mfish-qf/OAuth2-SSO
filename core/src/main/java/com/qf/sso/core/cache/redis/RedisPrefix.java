@@ -33,6 +33,10 @@ public class RedisPrefix {
     public static final String SMS_CODE = "sms_code:";
     //短信验证码倒计时 一分钟内部允许防止重复发送
     public static final String SMS_CODE_TIME = "sms_code_time:";
+    //通过微信openid获取用户id
+    public static final String OPENID2USER_ID = "openid2user_id:";
+    //二维码登录二维码
+    public static final String QR_CODE = "qrCode:";
 
     /**
      * 构建交换code
@@ -147,6 +151,7 @@ public class RedisPrefix {
 
     /**
      * 构建短信验证码缓存key
+     *
      * @param phone
      * @return
      */
@@ -156,6 +161,7 @@ public class RedisPrefix {
 
     /**
      * 构建短信验证码倒计时key
+     *
      * @param phone
      * @return
      */
@@ -163,4 +169,22 @@ public class RedisPrefix {
         return SMS_CODE_TIME + phone;
     }
 
+    /**
+     * 构建微信openId查找用户id的key
+     *
+     * @param openId
+     * @return
+     */
+    public static String buildOpenId2userIdKey(String openId) {
+        return OPENID2USER_ID + openId;
+    }
+
+    /**
+     * 构建二维码key
+     * @param code
+     * @return
+     */
+    public static String buildQrCodeKey(String code) {
+        return QR_CODE + code;
+    }
 }

@@ -9,11 +9,11 @@ public class SerConstant {
     public static final String ACCOUNT_DISABLE_DESCRIPTION = "登录失败:该帐号已禁用，请联系管理员";
     public static final String INVALID_USER_SECRET_DESCRIPTION = "登录失败:错误的帐号或密码";
     public static final String INVALID_USER_ID_DESCRIPTION = "登录失败:错误的用户ID";
-    public static final String USERNAME = "username";
-    public static final String PASSWORD = "password";
     public static final String REMEMBER_ME = "rememberMe";
     public static final String LOGIN_TYPE = "loginType";
     public static final String ERROR_MSG = "errorMsg";
+    public static final String QR_CODE = "code";
+    public static final String QR_SECRET = "qrSecret";
 
     /**
      * 登录类型
@@ -111,6 +111,35 @@ public class SerConstant {
         @Override
         public String toString() {
             return value;
+        }
+    }
+
+    /**
+     * 扫码状态
+     */
+    public enum ScanStatus {
+        未扫描("0"),
+        已扫描("1"),
+        已确认("2"),
+        已取消("3");
+        private String value;
+
+        ScanStatus(String value) {
+            this.value = value;
+        }
+
+        @Override
+        public String toString() {
+            return value;
+        }
+
+        public static ScanStatus getScanState(String value) {
+            for (ScanStatus state : ScanStatus.values()) {
+                if (state.toString().equalsIgnoreCase(value)) {
+                    return state;
+                }
+            }
+            return ScanStatus.未扫描;
         }
     }
 }

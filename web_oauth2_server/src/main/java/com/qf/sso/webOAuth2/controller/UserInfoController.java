@@ -8,6 +8,7 @@ import com.qf.sso.core.exception.OAuthValidateException;
 import com.qf.sso.core.model.RedisAccessToken;
 import com.qf.sso.core.model.SSOUser;
 import com.qf.sso.core.model.UserInfo;
+import com.qf.sso.core.service.OAuth2Service;
 import com.qf.sso.core.service.UserService;
 import com.qf.sso.core.validator.AccessTokenValidator;
 import io.swagger.annotations.Api;
@@ -15,6 +16,7 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.beanutils.BeanUtils;
+import org.apache.oltu.oauth2.common.OAuth;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -37,15 +39,15 @@ public class UserInfoController {
     @Resource
     AccessTokenValidator accessTokenValidator;
     @Resource
-    UserService userService;
+    OAuth2Service oAuth2Service;
     @Resource
     UserTokenCache userTokenCache;
 
     @ApiOperation("获取用户信息")
     @GetMapping("/info")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "Authorization", value = "认证token，header和access_token参数两种方式任意一种即可，格式为Bearer+token组合，例如Bearer39a5304bc77c655afbda6b967e5346fa", paramType = "header"),
-            @ApiImplicitParam(name = "access_token", value = "token值 header和access_token参数两种方式任意一种即可", paramType = "query")
+            @ApiImplicitParam(name = OAuth.HeaderType.AUTHORIZATION, value = "认证token，header和access_token参数两种方式任意一种即可，格式为Bearer+token组合，例如Bearer39a5304bc77c655afbda6b967e5346fa", paramType = "header"),
+            @ApiImplicitParam(name = OAuth.OAUTH_ACCESS_TOKEN, value = "token值 header和access_token参数两种方式任意一种即可", paramType = "query")
     })
     @LogAnnotation("getUser")
     public UserInfo getUserInfo(HttpServletRequest request) throws InvocationTargetException, IllegalAccessException {
@@ -53,14 +55,7 @@ public class UserInfoController {
         if (!result.isSuccess()) {
             throw new OAuthValidateException(result.getMsg());
         }
-        SSOUser user = userService.getUserById(result.getResult().getUserId());
-        if (user == null) {
-            throw new OAuthValidateException("错误:未获取到用户信息！");
-        }
-
-        UserInfo userInfo = new UserInfo();
-        BeanUtils.copyProperties(userInfo, user);
-        return userInfo;
+        return oAuth2Service.getUserInfo(result.getResult().getUserId());
     }
 
     @ApiOperation("用户登出")

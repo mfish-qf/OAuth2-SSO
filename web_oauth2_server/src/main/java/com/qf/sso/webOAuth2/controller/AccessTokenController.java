@@ -7,6 +7,7 @@ import com.qf.sso.core.common.SerConstant;
 import com.qf.sso.core.exception.OAuthValidateException;
 import com.qf.sso.core.model.AccessToken;
 import com.qf.sso.core.model.AuthorizationCode;
+import com.qf.sso.core.model.OAuthClient;
 import com.qf.sso.core.model.RedisAccessToken;
 import com.qf.sso.core.service.LoginService;
 import com.qf.sso.core.service.OAuth2Service;
@@ -51,19 +52,19 @@ public class AccessTokenController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "Content-Type", value = "请求类型,必须使用application/x-www-form-urlencoded类型", required = true, paramType = "header", defaultValue = "application/x-www-form-urlencoded"),
             @ApiImplicitParam(name = "grant_type", value = "token获取类型", required = true, paramType = "query"),
-            @ApiImplicitParam(name = "client_id", value = "客户端ID", required = true, paramType = "query"),
+            @ApiImplicitParam(name = OAuth.OAUTH_CLIENT_SECRET, value = "客户端ID", required = true, paramType = "query"),
             @ApiImplicitParam(name = "client_secret", value = "客户端秘钥", required = true, paramType = "query"),
-            @ApiImplicitParam(name = "redirect_uri", value = "回调地址", required = true, paramType = "query"),
-            @ApiImplicitParam(name = "state", value = "状态", paramType = "query"),
-            @ApiImplicitParam(name = "code", value = "认证code grant_type=authorization_code时必须", paramType = "query"),
-            @ApiImplicitParam(name = "username", value = "账号，手机，email grant_type=password时必须", paramType = "query"),
-            @ApiImplicitParam(name = "password", value = "密码 grant_type=password时必须", paramType = "query"),
+            @ApiImplicitParam(name = OAuth.OAUTH_REDIRECT_URI, value = "回调地址", required = true, paramType = "query"),
+            @ApiImplicitParam(name = OAuth.OAUTH_STATE, value = "状态", paramType = "query"),
+            @ApiImplicitParam(name = OAuth.OAUTH_CODE, value = "认证code grant_type=authorization_code时必须", paramType = "query"),
+            @ApiImplicitParam(name = OAuth.OAUTH_USERNAME, value = "账号，手机，email grant_type=password时必须", paramType = "query"),
+            @ApiImplicitParam(name = OAuth.OAUTH_PASSWORD, value = "密码 grant_type=password时必须", paramType = "query"),
             @ApiImplicitParam(name = "refresh_token", value = "密码 grant_type=refresh_token时必须", paramType = "query")
     })
     @LogAnnotation("getToken")
     public AccessToken token(HttpServletRequest request) throws OAuthSystemException, OAuthProblemException, InvocationTargetException, IllegalAccessException {
         OAuthTokenRequest tokenRequest = new OAuthTokenRequest(request);
-        CheckWithResult<?> result = code2TokenValidator.validateClient(request, null);
+        CheckWithResult<OAuthClient> result = code2TokenValidator.validateClient(request, null);
         if (!result.isSuccess()) {
             throw new OAuthValidateException(result.getMsg());
         }
@@ -100,11 +101,11 @@ public class AccessTokenController {
      * @throws InvocationTargetException
      */
     private RedisAccessToken code2Token(HttpServletRequest request, OAuthTokenRequest tokenRequest) throws OAuthSystemException, IllegalAccessException, InvocationTargetException {
-        CheckWithResult<?> result = code2TokenValidator.validateCode(request, null);
+        CheckWithResult<AuthorizationCode> result = code2TokenValidator.validateCode(request, null);
         if (!result.isSuccess()) {
             throw new OAuthValidateException(result.getMsg());
         }
-        return oAuth2Service.code2Token(tokenRequest, (AuthorizationCode) result.getResult());
+        return oAuth2Service.code2Token(tokenRequest, result.getResult());
     }
 
     /**
@@ -115,11 +116,11 @@ public class AccessTokenController {
      * @throws OAuthSystemException
      */
     private RedisAccessToken refresh2Token(HttpServletRequest request) throws OAuthSystemException {
-        CheckWithResult<?> result = refresh2TokenValidator.validateToken(request, null);
+        CheckWithResult<RedisAccessToken> result = refresh2TokenValidator.validateToken(request, null);
         if (!result.isSuccess()) {
             throw new OAuthValidateException(result.getMsg());
         }
-        return oAuth2Service.refresh2Token((RedisAccessToken) result.getResult());
+        return oAuth2Service.refresh2Token(result.getResult());
     }
 
     /**
@@ -133,7 +134,7 @@ public class AccessTokenController {
      * @throws InvocationTargetException
      */
     private RedisAccessToken pwd2Token(HttpServletRequest request, OAuthTokenRequest tokenRequest) throws OAuthSystemException, IllegalAccessException, InvocationTargetException {
-        CheckWithResult<?> result = loginService.login(request);
+        CheckWithResult<String> result = loginService.login(request);
         if (!result.isSuccess()) {
             throw new OAuthValidateException(result.getMsg());
         }

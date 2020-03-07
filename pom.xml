@@ -7,7 +7,7 @@
     <groupId>com.qf</groupId>
     <artifactId>sso</artifactId>
     <packaging>pom</packaging>
-    <version>1.0.0</version>
+    <version>1.0.9</version>
     <modules>
         <module>core</module>
         <module>web_oauth2_server</module>
@@ -34,6 +34,7 @@
         <oauth2.version>1.0.2</oauth2.version>
         <!--<security-oauth2.version>2.3.2.RELEASE</security-oauth2.version>-->
         <shiro.version>1.4.2</shiro.version>
+        <httpClient.version>4.5.11</httpClient.version>
     </properties>
     <dependencies>
         <dependency>
@@ -148,14 +149,14 @@
             <artifactId>commons-lang3</artifactId>
             <version>3.9</version>
         </dependency>
-
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>${httpClient.version}</version>
+        </dependency>
     </dependencies>
     <build>
         <plugins>
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>

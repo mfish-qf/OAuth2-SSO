@@ -2,18 +2,18 @@ package com.qf.sso.core.service;
 
 import com.qf.sso.core.model.AuthorizationCode;
 import com.qf.sso.core.model.RedisAccessToken;
+import com.qf.sso.core.model.UserInfo;
 import org.apache.oltu.oauth2.as.request.OAuthAuthzRequest;
 import org.apache.oltu.oauth2.as.request.OAuthTokenRequest;
 import org.apache.oltu.oauth2.common.exception.OAuthSystemException;
 
-import javax.servlet.http.HttpServletRequest;
 import java.lang.reflect.InvocationTargetException;
 
 /**
  * @author qiufeng
  * @date 2020/2/13 12:51
  */
-public interface OAuth2Service {
+public interface OAuth2Service extends TokenService<RedisAccessToken>{
     AuthorizationCode buildCode(OAuthAuthzRequest request) throws OAuthSystemException;
 
     void setCode(AuthorizationCode code);
@@ -28,17 +28,5 @@ public interface OAuth2Service {
 
     RedisAccessToken refresh2Token(RedisAccessToken token) throws OAuthSystemException;
 
-    void setToken(RedisAccessToken token);
-
-    void delToken(String token);
-
-    RedisAccessToken getToken(String token);
-
-    void setRefreshToken(RedisAccessToken token);
-
-    void updateRefreshToken(RedisAccessToken token);
-
-    RedisAccessToken getRefreshToken(String token);
-
-    void delRefreshToken(String token);
+    UserInfo getUserInfo(String userId) throws InvocationTargetException, IllegalAccessException;
 }
