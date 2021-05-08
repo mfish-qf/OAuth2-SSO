@@ -33,7 +33,7 @@
         <rocketmq.version>4.5.1</rocketmq.version>
         <oauth2.version>1.0.2</oauth2.version>
         <!--<security-oauth2.version>2.3.2.RELEASE</security-oauth2.version>-->
-        <shiro.version>1.4.2</shiro.version>
+        <shiro.version>1.6.0</shiro.version>
         <httpClient.version>4.5.11</httpClient.version>
     </properties>
     <dependencies>
