@@ -34,7 +34,7 @@
         <oauth2.version>1.0.2</oauth2.version>
         <!--<security-oauth2.version>2.3.2.RELEASE</security-oauth2.version>-->
         <shiro.version>1.4.2</shiro.version>
-        <httpClient.version>4.5.11</httpClient.version>
+        <httpClient.version>4.5.13</httpClient.version>
     </properties>
     <dependencies>
         <dependency>
