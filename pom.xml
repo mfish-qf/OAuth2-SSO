@@ -26,15 +26,15 @@
         <maven.compiler.encoding>UTF-8</maven.compiler.encoding>
         <java.version>1.8</java.version>
         <swagger.version>2.9.2</swagger.version>
-        <google.guava>23.0</google.guava>
+        <google.guava>30.0-jre</google.guava>
         <fastjson.version>1.2.62</fastjson.version>
         <druid.version>1.1.21</druid.version>
         <mybatis.version>2.1.0</mybatis.version>
         <rocketmq.version>4.5.1</rocketmq.version>
         <oauth2.version>1.0.2</oauth2.version>
         <!--<security-oauth2.version>2.3.2.RELEASE</security-oauth2.version>-->
-        <shiro.version>1.4.2</shiro.version>
-        <httpClient.version>4.5.11</httpClient.version>
+        <shiro.version>1.8.0</shiro.version>
+        <httpClient.version>4.5.13</httpClient.version>
     </properties>
     <dependencies>
         <dependency>
@@ -142,7 +142,7 @@
         <dependency>
             <groupId>org.jsoup</groupId>
             <artifactId>jsoup</artifactId>
-            <version>1.12.1</version>
+            <version>1.14.2</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
