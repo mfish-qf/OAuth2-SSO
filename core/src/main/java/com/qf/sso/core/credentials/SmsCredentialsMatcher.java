@@ -13,7 +13,7 @@ import javax.annotation.Resource;
  * @author qiufeng
  * @date 2020/2/25 16:51
  */
-public class SmsCredentialsMatcher extends SimpleCredentialsMatcher {
+public class SmsCredentialsMatcher extends AutoUserCredentialsMatcher {
     @Resource
     LoginService loginService;
 
@@ -21,6 +21,9 @@ public class SmsCredentialsMatcher extends SimpleCredentialsMatcher {
     public boolean doCredentialsMatch(AuthenticationToken authenticationToken, AuthenticationInfo authenticationInfo) {
         MyUsernamePasswordToken myToken = (MyUsernamePasswordToken) authenticationToken;
         boolean matches = super.doCredentialsMatch(authenticationToken, authenticationInfo);
-        return loginService.retryLimit(myToken.getUserId(), matches);
+        if(matches){
+            insertNewUser(myToken.isNew(),myToken.getUserInfo());
+        }
+        return loginService.retryLimit(myToken.getUserInfo().getId(), matches);
     }
 }

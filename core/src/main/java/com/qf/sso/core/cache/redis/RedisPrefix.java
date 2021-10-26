@@ -37,6 +37,8 @@ public class RedisPrefix {
     public static final String OPENID2USER_ID = "openid2user_id:";
     //二维码登录二维码
     public static final String QR_CODE = "qrCode:";
+    //微信登录获取sessionKey
+    public static final String SESSION_KEY = "sessionKey:";
 
     /**
      * 构建交换code
@@ -186,5 +188,15 @@ public class RedisPrefix {
      */
     public static String buildQrCodeKey(String code) {
         return QR_CODE + code;
+    }
+
+    /**
+     * 构建微信sessionKey临时缓存标签
+     *
+     * @param sessionKey
+     * @return
+     */
+    public static String buildSessionKey(String sessionKey) {
+        return SESSION_KEY + sessionKey;
     }
 }

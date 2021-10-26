@@ -1,7 +1,8 @@
 package com.qf.sso.core.common;
 
-import com.alibaba.fastjson.JSON;
-import com.qf.sso.core.exception.MyRuntimeException;
+import com.fasterxml.jackson.core.io.JsonStringEncoder;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
@@ -13,61 +14,61 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
-import org.apache.http.ssl.SSLContextBuilder;
 import org.apache.http.conn.ssl.TrustStrategy;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.http.ssl.SSLContextBuilder;
 import org.apache.http.util.EntityUtils;
 
 import javax.net.ssl.SSLContext;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
-
+import java.util.Map;
 
 /**
  * @author qiufeng
- * @date 2020/2/28 12:56
+ * @date 2020/4/29 10:49
  */
 @Slf4j
 public class HttpRequestUtil {
     /**
      * 发送post请求
+     *
      * @param url
      * @param contentType
      * @param <T>
      * @return
-     * @throws Exception
      */
-    public static <T> CheckWithResult<T> postMessage(String url, ContentType contentType) throws IOException {
+    public static <T> CheckWithResult<T> postMessage(String url, ContentType contentType) {
         return postMessage(url, "", null, contentType);
     }
 
     /**
      * 发送post请求
+     *
      * @param url
      * @param param
      * @param contentType
      * @param <T>
      * @return
-     * @throws Exception
      */
-    public static <T> CheckWithResult<T> postMessage(String url, String param, ContentType contentType) throws IOException {
+    public static <T> CheckWithResult<T> postMessage(String url, String param, ContentType contentType) {
         return postMessage(url, param, null, contentType);
     }
 
     /**
      * 发送post请求
+     *
      * @param url
      * @param param
      * @param host
      * @param contentType
      * @param <T>
      * @return
-     * @throws Exception
      */
-    public static <T> CheckWithResult<T> postMessage(String url, String param, HttpHost host, ContentType contentType) throws IOException {
+    public static <T> CheckWithResult<T> postMessage(String url, String param, HttpHost host, ContentType contentType) {
         HttpPost post = new HttpPost(url);
         if (!StringUtils.isEmpty(param)) {
             StringEntity entity = new StringEntity(param, contentType);
@@ -78,25 +79,25 @@ public class HttpRequestUtil {
 
     /**
      * 发送get请求
+     *
      * @param url
      * @param <T>
      * @return
-     * @throws Exception
      */
-    public static <T> CheckWithResult<T> getMessage(String url) throws IOException {
+    public static <T> CheckWithResult<T> getMessage(String url) {
         return getMessage(url, "");
     }
 
     /**
      * 发送get请求
+     *
      * @param url
      * @param param
      * @param host
      * @param <T>
      * @return
-     * @throws Exception
      */
-    public static <T> CheckWithResult<T> getMessage(String url, String param, HttpHost host) throws IOException {
+    public static <T> CheckWithResult<T> getMessage(String url, String param, HttpHost host) {
         if (!StringUtils.isEmpty(param)) {
             if (url.indexOf('?') >= 0) {
                 url += "&" + param;
@@ -104,8 +105,12 @@ public class HttpRequestUtil {
                 url += "?" + param;
             }
         }
+        HttpType httpType = HttpType.getHttpType(url);
+        if (httpType == HttpType.unknown) {
+            return new CheckWithResult<T>().setSuccess(false).setMsg("错误的请求链接");
+        }
         HttpGet get = new HttpGet(url);
-        return executeRequest(get, HttpType.getHttpType(url), host);
+        return executeRequest(get, httpType, host);
     }
 
     /**
@@ -114,21 +119,20 @@ public class HttpRequestUtil {
      * @param url
      * @param host
      * @return
-     * @throws Exception
      */
-    public static <T> CheckWithResult<T> getMessage(String url, HttpHost host) throws Exception {
+    public static <T> CheckWithResult<T> getMessage(String url, HttpHost host) {
         return getMessage(url, "", host);
     }
 
     /**
      * 发送get请求
+     *
      * @param url
      * @param param
      * @param <T>
      * @return
-     * @throws Exception
      */
-    public static <T> CheckWithResult<T> getMessage(String url, String param) throws IOException {
+    public static <T> CheckWithResult<T> getMessage(String url, String param) {
         return getMessage(url, param, null);
     }
 
@@ -138,9 +142,8 @@ public class HttpRequestUtil {
      * @param request
      * @param httpType
      * @return
-     * @throws Exception
      */
-    private static <T> CheckWithResult<T> executeRequest(HttpRequestBase request, HttpType httpType, HttpHost host) throws IOException {
+    private static <T> CheckWithResult<T> executeRequest(HttpRequestBase request, HttpType httpType, HttpHost host) {
         CloseableHttpClient client = null;
         CloseableHttpResponse response = null;
         try {
@@ -148,9 +151,11 @@ public class HttpRequestUtil {
                 case https:
                     client = HttpClients.custom().setSSLSocketFactory(createSSLConnSocketFactory()).build();
                     break;
-                default:
+                case http:
                     client = HttpClients.createDefault();
                     break;
+                default:
+                    return new CheckWithResult<T>().setSuccess(false).setMsg("错误:未知的请求类型");
             }
             RequestConfig requestConfig;
             RequestConfig.Builder builder = RequestConfig.custom()
@@ -167,7 +172,11 @@ public class HttpRequestUtil {
             String returnValue = EntityUtils.toString(entity);
             EntityUtils.consume(entity);
             if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
-                return new CheckWithResult().setResult(JSON.parseObject(returnValue));
+                //encode防止json注入
+                byte[] bytes = JsonStringEncoder.getInstance().encodeAsUTF8(returnValue);
+                ObjectMapper objectMapper = new ObjectMapper();
+                return new CheckWithResult<T>().setResult(objectMapper.readValue(bytes, new TypeReference<T>() {
+                }));
             } else {
                 String error = "错误:请求出错!错误代码:" + response.getStatusLine().getStatusCode();
                 log.error(error);
@@ -177,11 +186,15 @@ public class HttpRequestUtil {
             log.error("异常:请求异常", ex);
             return new CheckWithResult<T>().setMsg(ex.getMessage()).setSuccess(false);
         } finally {
-            if (client != null) {
-                client.close();
-            }
-            if (response != null) {
-                response.close();
+            try {
+                if (client != null) {
+                    client.close();
+                }
+                if (response != null) {
+                    response.close();
+                }
+            } catch (IOException e) {
+                log.error("错误:请求关闭异常", e);
             }
         }
     }
@@ -199,11 +212,10 @@ public class HttpRequestUtil {
             sslSf = new SSLConnectionSocketFactory(sslContext);
         } catch (GeneralSecurityException e) {
             log.error("创建ssl安全连接异常!", e);
-            throw new MyRuntimeException(e);
+            throw new RuntimeException(e);
         }
         return sslSf;
     }
-
 
 
     /**
@@ -211,7 +223,9 @@ public class HttpRequestUtil {
      */
     public enum HttpType {
         http(0),
-        https(1);
+        https(1),
+        unknown(2);
+
         private int value;
 
         HttpType(int value) {
@@ -240,8 +254,10 @@ public class HttpRequestUtil {
         public static HttpType getHttpType(String url) {
             if (url.startsWith(HttpType.https.toString())) {
                 return HttpType.https;
+            } else if (url.startsWith(HttpType.http.toString())) {
+                return HttpType.http;
             }
-            return HttpType.http;
+            return HttpType.unknown;
         }
     }
 }

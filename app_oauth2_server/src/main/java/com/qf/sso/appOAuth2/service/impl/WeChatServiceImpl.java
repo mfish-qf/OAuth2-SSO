@@ -27,15 +27,15 @@ import java.util.concurrent.TimeUnit;
 @Service
 @Slf4j
 public class WeChatServiceImpl implements WeChatService {
-    @Value("${weChat.url}")
-    private String url = "";
-    @Value("${weChat.appId}")
-    private String appId = "";
-    @Value("${weChat.secret}")
-    private String secret = "";
+//    @Value("${weChat.url}")
+//    private String url = "";
+//    @Value("${weChat.appId}")
+//    private String appId = "";
+//    @Value("${weChat.secret}")
+//    private String secret = "";
     @Value("${oauth2.expire.token}")
     private long tokenExpire = 21600;
-    @Value("${oauth2.expire.token}")
+    @Value("${oauth2.expire.refreshToken}")
     private long reTokenExpire = 604800;
 
     @Resource
@@ -45,33 +45,19 @@ public class WeChatServiceImpl implements WeChatService {
     @Resource
     RedisTemplate<String, Object> redisTemplate;
 
-    /**
-     * 构造微信code2session接口链接
-     *
-     * @param code
-     * @return
-     */
-    private String buildWeChatUrl(String code) {
-        return url + "?appid=" + appId + "&secret=" + secret + "&js_code=" + code + "&grant_type=authorization_code";
-    }
+//    /**
+//     * 构造微信code2session接口链接
+//     *
+//     * @param code
+//     * @return
+//     */
+//    private String buildWeChatUrl(String code) {
+//        return url + "?appid=" + appId + "&secret=" + secret + "&js_code=" + code + "&grant_type=authorization_code";
+//    }
+
 
     @Override
-    public CheckWithResult<Map<String, String>> getSession(String code) {
-        String url = buildWeChatUrl(code);
-        CheckWithResult<Map<String, String>> result = null;
-        try {
-            result = HttpRequestUtil.getMessage(url);
-        } catch (IOException e) {
-            log.error("错误:请求微信服务端失败", e);
-        }
-        if (result == null) {
-            return new CheckWithResult<Map<String, String>>().setSuccess(false).setMsg("错误:获取微信session出错");
-        }
-        return result;
-    }
-
-    @Override
-    public String getUserId(String openId) {
+    public String getUserIdByOpenId(String openId) {
         return openIdTempCache.getCacheInfo(openId);
     }
 
@@ -82,6 +68,11 @@ public class WeChatServiceImpl implements WeChatService {
         user.setId(userId);
         CheckWithResult<SSOUser> result = userService.update(user);
         return result.isSuccess();
+    }
+
+    @Override
+    public boolean bindWeChat(String openId, String userId, String nickname) {
+        return false;
     }
 
     @Override

@@ -1,6 +1,7 @@
 package com.qf.sso.core.service;
 
 import com.qf.sso.core.common.CheckWithResult;
+import com.qf.sso.core.common.SerConstant;
 import org.springframework.ui.Model;
 
 import javax.servlet.http.HttpServletRequest;
@@ -13,6 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 public interface LoginService {
     /**
      * 请求登录
+     *
      * @param model
      * @param request
      * @return
@@ -21,6 +23,7 @@ public interface LoginService {
 
     /**
      * 提交登录数据
+     *
      * @param mode
      * @param request
      * @return
@@ -29,13 +32,25 @@ public interface LoginService {
 
     /**
      * 登录
+     *
      * @param request
      * @return
      */
     CheckWithResult<String> login(HttpServletRequest request);
 
     /**
+     * 登录
+     *
+     * @param username
+     * @param password
+     * @param loginType
+     * @return
+     */
+    CheckWithResult<String> login(String username, String password, SerConstant.LoginType loginType, String rememberMe);
+
+    /**
      * 登录重试计数
+     *
      * @param userId
      * @param matches
      * @return
@@ -44,6 +59,7 @@ public interface LoginService {
 
     /**
      * 发送短信
+     *
      * @param phone
      * @param msg
      */
@@ -51,27 +67,62 @@ public interface LoginService {
 
     /**
      * 保存短信验证码
+     *
      * @param phone
      * @param code
      */
     void saveSmsCode(String phone, String code);
 
     /**
+     * 删除短信验证码
+     *
+     * @param phone
+     */
+    void delSmsCode(String phone);
+
+    /**
      * 获取短信验证码
+     *
      * @param phone
      * @return
      */
     String getSmsCode(String phone);
+
     /**
      * 保存短信倒计时信息
+     *
      * @param phone
      */
     void saveSmsCodeTime(String phone);
 
     /**
+     * 删除短信倒计时信息
+     *
+     * @param phone
+     */
+    void delSmsCodeTime(String phone);
+
+    /**
      * 获取短信验证码倒计时时间
+     *
      * @param phone
      * @return
      */
     long getSmsCodeTime(String phone);
+
+    /**
+     * 临时缓存sessionKey
+     *
+     * @param sessionKey
+     * @param openId
+     */
+    void sessionKeyTempCache(String sessionKey, String openId);
+
+    /**
+     * 通过sessionKey获取openId
+     *
+     * @param sessionKey
+     * @return
+     */
+    String getOpenIdBySessionKey(String sessionKey);
 }

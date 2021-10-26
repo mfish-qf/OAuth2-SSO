@@ -12,6 +12,12 @@ import org.apache.ibatis.annotations.Select;
 @Mapper
 public interface SSOUserDao {
     /**
+     * 插入用户信息
+     * @param userInfo
+     * @return
+     */
+    int insert(SSOUser userInfo);
+    /**
      * 更新用户信息
      *
      * @param ssoUser

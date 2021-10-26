@@ -2,6 +2,12 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.qf.sso.core.dao.SSOUserDao">
+    <insert id="insert" parameterType="com.qf.sso.core.model.SSOUser">
+        insert into sso_user(id,account,phone,email,password,old_password,nickname,headImgUrl
+            ,telephone,birthday,sex,status,salt,openid,create_time)
+        values(#{id},#{account},#{phone},#{email},#{password},#{old_password},#{nickname},#{headImgUrl},#{telephone}
+                  ,#{birthday},#{sex},#{status},#{salt},#{openid},now())
+    </insert>
     <update id="update">
         update sso_user t
         <set>

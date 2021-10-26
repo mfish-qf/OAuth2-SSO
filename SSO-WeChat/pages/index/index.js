@@ -54,7 +54,7 @@ Page({
     wx.login({
       success: res => {
         wx.request({
-          url: app.globalData.domain + '/weChat/checkBind',
+          url: app.globalData.domain + '/wx/bind/check',
           data: {
             code: res.code
           },
@@ -95,7 +95,7 @@ Page({
     wx.login({
       success: res => {
         wx.request({
-          url: app.globalData.domain + '/weChat/bind',
+          url: app.globalData.domain + '/wx/bind',
           method: 'POST',
           data: {
             code: res.code,
@@ -119,7 +119,7 @@ Page({
   getUser() {
     let _this = this;
     wx.request({
-      url: app.globalData.domain + '/weChat/userInfo',
+      url: app.globalData.domain + '/wx/userInfo',
       data: {
         access_token: wx.getStorageSync("access_token").access_token,
       },

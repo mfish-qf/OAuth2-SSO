@@ -9,11 +9,16 @@ public class SerConstant {
     public static final String ACCOUNT_DISABLE_DESCRIPTION = "登录失败:该帐号已禁用，请联系管理员";
     public static final String INVALID_USER_SECRET_DESCRIPTION = "登录失败:错误的帐号或密码";
     public static final String INVALID_USER_ID_DESCRIPTION = "登录失败:错误的用户ID";
+    public static final String INVALID_WX_ID_DESCRIPTION = "登录失败:错误的微信ID";
+    public static final String INVALID_NEW_USER_DESCRIPTION = "登录失败:插入新用户失败";
     public static final String REMEMBER_ME = "rememberMe";
     public static final String LOGIN_TYPE = "loginType";
     public static final String ERROR_MSG = "errorMsg";
     public static final String QR_CODE = "code";
     public static final String QR_SECRET = "qrSecret";
+    public static final String NICKNAME = "nickname";
+    public static final String PHONE = "phone";
+    public static final String PASSWORD = "password";
 
     /**
      * 登录类型

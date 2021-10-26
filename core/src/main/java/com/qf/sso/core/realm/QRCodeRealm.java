@@ -18,7 +18,7 @@ public class QRCodeRealm extends BaseRealm {
     QRCodeService qrCodeService;
 
     @Override
-    protected AuthenticationInfo buildAuthenticationInfo(SSOUser user, AuthenticationToken authenticationToken) {
+    protected AuthenticationInfo buildAuthenticationInfo(SSOUser user, AuthenticationToken authenticationToken, boolean newUser) {
         String[] secret = StringUtils.split(String.valueOf(((MyUsernamePasswordToken) authenticationToken).getPassword()), ",");
         //secret由扫码code值和secret拼接而成
         if (secret == null || secret.length != 2) {

@@ -35,6 +35,7 @@
         <!--<security-oauth2.version>2.3.2.RELEASE</security-oauth2.version>-->
         <shiro.version>1.8.0</shiro.version>
         <httpClient.version>4.5.13</httpClient.version>
+        <wechat.version>4.0.4.B</wechat.version>
     </properties>
     <dependencies>
         <dependency>
@@ -153,6 +154,17 @@
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
             <version>${httpClient.version}</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/com.github.binarywang/weixin-java-pay -->
+        <dependency>
+            <groupId>com.github.binarywang</groupId>
+            <artifactId>weixin-java-miniapp</artifactId>
+            <version>${wechat.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.binarywang</groupId>
+            <artifactId>weixin-java-mp</artifactId>
+            <version>${wechat.version}</version>
         </dependency>
     </dependencies>
     <build>

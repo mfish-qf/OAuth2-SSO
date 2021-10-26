@@ -1,6 +1,7 @@
 package com.qf.sso.core.realm;
 
 import com.qf.sso.core.common.SerConstant;
+import com.qf.sso.core.model.SSOUser;
 import org.apache.shiro.authc.UsernamePasswordToken;
 
 /**
@@ -10,7 +11,8 @@ import org.apache.shiro.authc.UsernamePasswordToken;
 public class MyUsernamePasswordToken extends UsernamePasswordToken {
 
     //用户ID
-    private String userId;
+    private SSOUser userInfo;
+    private boolean isNew;
 
     //登录类型
     private SerConstant.LoginType loginType = SerConstant.LoginType.密码登录;
@@ -23,14 +25,6 @@ public class MyUsernamePasswordToken extends UsernamePasswordToken {
         super(username, password, rememberMe);
     }
 
-    public String getUserId() {
-        return userId;
-    }
-
-    public MyUsernamePasswordToken setUserId(String userId) {
-        this.userId = userId;
-        return this;
-    }
 
     public SerConstant.LoginType getLoginType() {
         return loginType;
@@ -39,5 +33,19 @@ public class MyUsernamePasswordToken extends UsernamePasswordToken {
     public MyUsernamePasswordToken setLoginType(SerConstant.LoginType loginType) {
         this.loginType = loginType;
         return this;
+    }
+    public SSOUser getUserInfo() {
+        return userInfo;
+    }
+
+    public void setUserInfo(SSOUser userInfo) {
+        this.userInfo = userInfo;
+    }
+    public boolean isNew() {
+        return isNew;
+    }
+
+    public void setNew(boolean aNew) {
+        isNew = aNew;
     }
 }

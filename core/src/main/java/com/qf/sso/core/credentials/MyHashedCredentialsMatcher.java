@@ -20,7 +20,7 @@ public class MyHashedCredentialsMatcher extends HashedCredentialsMatcher {
     public boolean doCredentialsMatch(AuthenticationToken token, AuthenticationInfo info) {
         MyUsernamePasswordToken myToken = (MyUsernamePasswordToken) token;
         boolean matches = super.doCredentialsMatch(token, info);
-        return loginService.retryLimit(myToken.getUserId(), matches);
+        return loginService.retryLimit(myToken.getUserInfo().getId(), matches);
     }
 
 }

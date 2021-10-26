@@ -27,6 +27,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import javax.crypto.KeyGenerator;
+import javax.crypto.SecretKey;
+import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -68,7 +71,7 @@ public class ShiroConfig {
         filterChainDefinitionMap.put("/img/**", "anon");
         filterChainDefinitionMap.put("/js/**", "anon");
         filterChainDefinitionMap.put("/fonts/**", "anon");
-        filterChainDefinitionMap.put("/weChat/**", "anon");
+        filterChainDefinitionMap.put("/wx/**", "anon");
         filterChainDefinitionMap.put("/swagger-ui.html/**", "anon");
         filterChainDefinitionMap.put("/swagger-resources/**", "anon");
         filterChainDefinitionMap.put("/v2/api-docs/**", "anon");
@@ -240,6 +243,17 @@ public class ShiroConfig {
         securityManager.setCacheManager(redisCacheManager);
         securityManager.setRememberMeManager(cookieRememberMeManager());
         return securityManager;
+    }
+
+    public static void main(String[] args){
+        KeyGenerator keygen = null;
+        try {
+            keygen = KeyGenerator.getInstance("AES");
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+        SecretKey deskey = keygen.generateKey();
+        System.out.println(Base64.encodeToString(deskey.getEncoded()));
     }
 }
 

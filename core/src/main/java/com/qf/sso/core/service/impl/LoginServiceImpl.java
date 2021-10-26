@@ -99,7 +99,22 @@ public class LoginServiceImpl implements LoginService {
     public CheckWithResult<String> login(HttpServletRequest request) {
         String username = request.getParameter(OAuth.OAUTH_USERNAME);
         String password = request.getParameter(OAuth.OAUTH_PASSWORD);
+        SerConstant.LoginType loginType = SerConstant.LoginType.getLoginType(request.getParameter(SerConstant.LOGIN_TYPE));
         String rememberMe = request.getParameter(SerConstant.REMEMBER_ME);
+        return login(username, password, loginType, rememberMe);
+
+    }
+
+
+    /**
+     * 登录用户验证逻辑
+     *
+     * @param username
+     * @param password
+     * @param loginType
+     * @return
+     */
+    public CheckWithResult<String> login(String username, String password, SerConstant.LoginType loginType, String rememberMe) {
         boolean remember = false;
         if (!StringUtils.isEmpty(rememberMe)) {
             remember = Boolean.parseBoolean(rememberMe);
@@ -110,15 +125,14 @@ public class LoginServiceImpl implements LoginService {
                     .getParam().put(SerConstant.ERROR_MSG, SerConstant.INVALID_USER_SECRET_DESCRIPTION);
             return result;
         }
-        SSOUser user = userService.getUserByAccount(username);
-        if (user == null) {
-            result.setSuccess(false).setMsg(SerConstant.INVALID_USER_SECRET_DESCRIPTION)
-                    .getParam().put(SerConstant.ERROR_MSG, SerConstant.INVALID_USER_SECRET_DESCRIPTION);
-            return result;
-        }
-        SerConstant.LoginType loginType = SerConstant.LoginType.getLoginType(request.getParameter(SerConstant.LOGIN_TYPE));
+//        SSOUser user = userService.getUserByAccount(username);
+//        if (user == null) {
+//            result.setSuccess(false).setMsg(SerConstant.INVALID_USER_SECRET_DESCRIPTION)
+//                    .getParam().put(SerConstant.ERROR_MSG, SerConstant.INVALID_USER_SECRET_DESCRIPTION);
+//            return result;
+//        }
         MyUsernamePasswordToken token = new MyUsernamePasswordToken(username, password, remember)
-                .setUserId(user.getId()).setLoginType(loginType);
+                .setLoginType(loginType);
         try {
             SecurityUtils.getSubject().login(token);
             return result;
@@ -126,22 +140,26 @@ public class LoginServiceImpl implements LoginService {
             //多次重试错误信息
             result.setSuccess(false).setMsg(ex.getMessage())
                     .getParam().put(SerConstant.ERROR_MSG, ex.getMessage());
-            log.info("用户:" + user.getId() + "登录客户端:" + "" + "失败" + ex.getMessage());
+            log.info("用户:" + username + "登录客户端:" + "" + "失败" + ex.getMessage());
             return result;
         } catch (IncorrectCredentialsException ex) {
             //错误凭证错误信息
             result.setSuccess(false).setMsg(ex.getMessage())
                     .getParam().put(SerConstant.ERROR_MSG, ex.getMessage());
-            log.info("用户:" + user.getId() + "登录客户端:" + "" + "失败" + ex.getMessage());
+            log.info("用户:" + username + "登录客户端:" + "" + "失败" + ex.getMessage());
+            //登录成功清空短信验证码
+            if (loginType == SerConstant.LoginType.短信登录) {
+                delSmsCode(username);
+            }
             return result;
         } catch (Exception ex) {
             //其他异常错误信息
             result.setSuccess(false).setMsg(ex.getMessage())
                     .getParam().put(SerConstant.ERROR_MSG, ex.getMessage());
-            log.info("用户:" + user.getId() + "登录客户端:" + "" + "失败" + ex.getMessage());
+            log.info("用户:" + username + "登录客户端:" + "" + "失败" + ex.getMessage());
             return result;
         } finally {
-            result.setResult(user.getId());
+            result.setResult(token.getUserInfo().getId());
             result.getParam().put(OAuth.OAUTH_USERNAME, username);
             result.getParam().put(SerConstant.LOGIN_TYPE, loginType.toString());
         }
@@ -193,6 +211,11 @@ public class LoginServiceImpl implements LoginService {
     }
 
     @Override
+    public void delSmsCode(String phone) {
+        redisTemplate.delete(RedisPrefix.buildSMSCodeKey(phone));
+    }
+
+    @Override
     public String getSmsCode(String phone) {
         return (String) redisTemplate.opsForValue().get(RedisPrefix.buildSMSCodeKey(phone));
     }
@@ -203,10 +226,24 @@ public class LoginServiceImpl implements LoginService {
     }
 
     @Override
+    public void delSmsCodeTime(String phone) {
+        redisTemplate.delete(RedisPrefix.buildSMSCodeTimeKey(phone));
+    }
+
+    @Override
     public long getSmsCodeTime(String phone) {
         return redisTemplate.getExpire(RedisPrefix.buildSMSCodeTimeKey(phone));
     }
 
+    @Override
+    public void sessionKeyTempCache(String sessionKey, String openId) {
+        redisTemplate.opsForValue().set(RedisPrefix.buildSessionKey(sessionKey), openId, 5, TimeUnit.MINUTES);
+    }
+
+    @Override
+    public String getOpenIdBySessionKey(String sessionKey) {
+        return (String) redisTemplate.opsForValue().get(RedisPrefix.buildSessionKey(sessionKey));
+    }
     /**
      * 获取30分钟内登录次数
      *

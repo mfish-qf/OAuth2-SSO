@@ -11,7 +11,7 @@ import org.apache.shiro.util.ByteSource;
 public class UserPasswordRealm extends BaseRealm {
 
     @Override
-    protected AuthenticationInfo buildAuthenticationInfo(SSOUser user, AuthenticationToken authenticationToken) {
+    protected AuthenticationInfo buildAuthenticationInfo(SSOUser user, AuthenticationToken authenticationToken, boolean newUser) {
         //交给AuthenticatingRealm使用CredentialsMatcher进行密码匹配，如果觉得人家的不好可以自定义实现
         SimpleAuthenticationInfo authenticationInfo = new SimpleAuthenticationInfo(
                 user.getId(), //用户名

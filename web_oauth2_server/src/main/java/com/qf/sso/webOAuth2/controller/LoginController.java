@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
+import java.security.NoSuchAlgorithmException;
 
 /**
  * @author qiufeng
@@ -41,7 +42,7 @@ public class LoginController {
     @PostMapping("/sendMsg")
     @ResponseBody
     @ApiImplicitParam(name = "phone", value = "手机号", paramType = "query", required = true)
-    public CheckWithResult<String> sendMsg(String phone) {
+    public CheckWithResult<String> sendMsg(String phone) throws NoSuchAlgorithmException {
         if (StringUtils.isEmpty(phone)) {
             return new CheckWithResult<String>().setSuccess(false)
                     .setMsg("错误:手机号不允许为空");

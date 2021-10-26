@@ -16,6 +16,13 @@ public class AccessToken {
     @ApiModelProperty("有效期")
     private Long expires_in;
 
+    public AccessToken() {
+    }
+
+    public AccessToken(AccessToken token) {
+        this.setAccess_token(token.getAccess_token()).setRefresh_token(token.getRefresh_token()).setExpires_in(token.getExpires_in());
+    }
+
     public String getAccess_token() {
         return access_token;
     }

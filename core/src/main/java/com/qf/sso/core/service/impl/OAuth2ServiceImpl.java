@@ -43,7 +43,7 @@ public class OAuth2ServiceImpl implements OAuth2Service {
     private long codeExpire = 180;
     @Value("${oauth2.expire.token}")
     private long tokenExpire = 21600;
-    @Value("${oauth2.expire.token}")
+    @Value("${oauth2.expire.refreshToken}")
     private long reTokenExpire = 604800;
 
     @Override

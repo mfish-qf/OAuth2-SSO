@@ -8,3 +8,9 @@ dependency-reduced-pom.xml
 buildNumber.properties
 .mvn/timing.properties
 .mvn/wrapper/maven-wrapper.jar
+/web_oauth2_server/logs/
+/web_oauth2_server/target/
+/app_oauth2_server/target/
+/core/target/
+/.idea/
+/logs/

@@ -8,6 +8,8 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.*;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 
 /**
  * @author qiufeng
@@ -65,9 +67,24 @@ public class Utils {
 
     /**
      * 生成6位数验证码
+     *
      * @return
      */
-    public static String buildCode(){
-        return String.valueOf((int)(Math.random()*900000+100000));
+    public static String buildCode() throws NoSuchAlgorithmException {
+        SecureRandom random = SecureRandom.getInstance("SHA1PRNG");
+        return String.valueOf((int) (random.nextDouble() * 900000 + 100000));
     }
+
+    /**
+     * 手机号脱敏
+     * @param value
+     * @return
+     */
+    public static String phoneMasking(String value) {
+        if (StringUtils.isEmpty(value) || value.length() != 11) {
+            return value;
+        }
+        return value.replaceAll("(\\d{3})\\d{4}(\\d{4})","$1****$2");
+    }
+
 }

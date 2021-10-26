@@ -12,13 +12,6 @@ import java.util.Map;
  * @date 2020/2/28 17:32
  */
 public interface WeChatService extends TokenService<WeChatToken> {
-    /**
-     * 访问微信接口获取微信session,openid
-     *
-     * @param code
-     * @return
-     */
-    CheckWithResult<Map<String, String>> getSession(String code);
 
     /**
      * 通过openid获取用户id,检查微信绑定状态
@@ -26,7 +19,7 @@ public interface WeChatService extends TokenService<WeChatToken> {
      * @param openId
      * @return
      */
-    String getUserId(String openId);
+    String getUserIdByOpenId(String openId);
 
     /**
      * 微信用户绑定
@@ -36,6 +29,16 @@ public interface WeChatService extends TokenService<WeChatToken> {
      * @return
      */
     boolean bindWeChat(String openId, String userId);
+
+    /**
+     * 微信用户绑定
+     *
+     * @param openId
+     * @param userId
+     * @param nickname
+     * @return
+     */
+    boolean bindWeChat(String openId, String userId,String nickname);
 
     /**
      * 构建微信token

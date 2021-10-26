@@ -68,4 +68,4 @@ oauth2:
   expire:
     code: 180
     token: 21600
-    refreshToken: 604800‬
+    refreshToken: 604800

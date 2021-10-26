@@ -9,6 +9,7 @@ import com.qf.sso.core.model.SSOUser;
  */
 public interface UserService {
     CheckWithResult<SSOUser> changePassword(String userId, String newPassword);
+    CheckWithResult<SSOUser> insert(SSOUser user);
     CheckWithResult<SSOUser> update(SSOUser user);
     SSOUser getUserByAccount(String account);
     SSOUser getUserById(String userId);

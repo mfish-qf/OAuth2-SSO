@@ -64,6 +64,17 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public CheckWithResult<SSOUser> insert(SSOUser user) {
+        CheckWithResult<SSOUser> result = new CheckWithResult<SSOUser>().setResult(user);
+        int res = ssoUserDao.insert(user);
+        if (res > 0) {
+            userTempCache.updateCacheInfo(user.getId(), user);
+            return result;
+        }
+        return result.setSuccess(false).setMsg("错误:插入用户信息失败!");
+    }
+
+    @Override
     public CheckWithResult<SSOUser> update(SSOUser user) {
         CheckWithResult<SSOUser> result = new CheckWithResult<SSOUser>().setResult(user);
         int res = ssoUserDao.update(user);
