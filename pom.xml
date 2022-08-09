@@ -27,13 +27,13 @@
         <java.version>1.8</java.version>
         <swagger.version>2.9.2</swagger.version>
         <google.guava>30.0-jre</google.guava>
-        <fastjson.version>1.2.62</fastjson.version>
+        <fastjson.version>1.2.83</fastjson.version>
         <druid.version>1.1.21</druid.version>
         <mybatis.version>2.1.0</mybatis.version>
         <rocketmq.version>4.5.1</rocketmq.version>
         <oauth2.version>1.0.2</oauth2.version>
         <!--<security-oauth2.version>2.3.2.RELEASE</security-oauth2.version>-->
-        <shiro.version>1.8.0</shiro.version>
+        <shiro.version>1.9.1</shiro.version>
         <httpClient.version>4.5.13</httpClient.version>
         <wechat.version>4.0.4.B</wechat.version>
     </properties>
