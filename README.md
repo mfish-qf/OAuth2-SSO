@@ -2,7 +2,6 @@
 ****
 #### 项目介绍
 Maven项目, 字符编码: UTF-8;  
-
 基于springboot框架整合shiro安全验证框架,基于oltu实现oauth2单点登录认证  
 前端采用thymeleaf+vue.js实现  
 项目由core,web_oauth2_server,app_oauth2_server三部分组成  
